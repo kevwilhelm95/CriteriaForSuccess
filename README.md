@@ -11,3 +11,10 @@ Installation
 Usage
 Required arguments:
 Argument  Description
+
+
+
+Required reference files not in repo:
+- STRINGv11.txt
+- STRINGv10.txt
+- MeTeOR.txt
