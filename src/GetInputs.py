@@ -1,4 +1,8 @@
-
+'''
+author: @kevwilhelm95
+Built from version 2 -
+Purpose - Load and clean input files needed for Criteria For Success
+'''
 import pandas as pd
 from scipy.stats import hypergeom as hg
 import numpy as np
@@ -8,18 +12,19 @@ import matplotlib.pyplot as plt
 
 
 class GetInputs():
-    def __init__(self, input_path, output_path, exp_name):
+    def __init__(self, input_path, ac_thresh, output_path, exp_name):
         '''
         Takes as input the argument path to a directory containing input data
         '''
         self.path = input_path
+        self.acThresh = ac_thresh
         self.opath = output_path
         self.expName = exp_name
 
     def BigPipeline(self):
         ## Define functions needed for BigPipeline
         # Loads and merges gene lists from machine learning methods
-        def load_ML(self):
+        def LoadLists(self):
             # EAML
             eaml = pd.read_csv(self.path +
                             "EAML_output/meanMCC-results.nonzero-stats.rankings")
@@ -38,56 +43,21 @@ class GetInputs():
             eaw_fdr01 = eaw[eaw['fdr'] <= 0.1]
             eaw_fdr001 = eaw[eaw['fdr'] <= 0.01]
 
+            # Reactome and Genes
+            reactome = pd.read_csv(self.path + "Pathway_output/AC" + str(self.acThresh) + "/Reactome_Cases/Step8_SigCoreGenesAbove5thPercentile.txt", sep='\t', header=None, skiprows=2, names=['Genes'])
+            string = pd.read_csv(self.path + "Pathway_output/AC" + str(self.acThresh) + "/STRING_Cases/Step8_SigCoreGenesAbove5thPercentile.txt", sep="\t", header=None, skiprows=2, names=['Genes'])
+
             # Create dataframes
-            self.ml_fdr01 = pd.DataFrame(
-                {'EAML': eaml_fdr01.gene, 'EPI': epi_fdr01.Genes, 'EAW': eaw_fdr01.gene})
-            self.ml_fdr001 = pd.DataFrame(
-                {'EAML': eaml_fdr001.gene, 'EPI': epi_fdr001.Genes, 'EAW': eaw_fdr001.gene})
-        
-        # Loads the Pathways, analyzes the best allele count, and creates a meta sheet with EPI, EAW, EAML, Reactome, and STRING gene lists
-        def load_Pathways(self):
-            p_hold = pd.DataFrame(columns = ['AC', 'Over-p', 'ML-p'])
-            for i in range (1,6):
-                # Load genes meeting threshold Fold Better > 1, q-value < 0.05, and > 20 variants in the main pathway
-                react_hold = pd.read_csv(self.path + "Pathway_output/AC" + str(i) + "/Reactome_Cases/Step8_SigCoreGenesAbove5thPercentile.txt", sep='\t', header=None, skiprows=2, names=['Genes'])
-                string_hold = pd.read_csv(self.path + "Pathway_output/AC" + str(i) + "/STRING_Cases/Step8_SigCoreGenesAbove5thPercentile.txt", sep="\t", header=None, skiprows=2, names=['Genes'])
+            self.fdr01_df = pd.DataFrame(
+                {'EAML': eaml_fdr01.gene.dropna(), 'EPI': epi_fdr01.Genes.dropna(), 'EAW': eaw_fdr01.gene.dropna(), 'Reactome': reactome.Genes.dropna(), 'STRING': string.Genes.dropna()})
+            self.fdr001_df = pd.DataFrame({'EAML': eaml_fdr001.gene, 'EPI': epi_fdr001.Genes, 'EAW': eaw_fdr001.gene, 'Reactome': reactome.Genes.dropna(), 'STRING': string.Genes.dropna()})
 
-                # Check overlap between lists
-                overlap_hold = react_hold['Genes'][react_hold['Genes'].isin(string_hold['Genes'])]
-                pval = hg(M=self.num_genes, n=len(react_hold['Genes']), N = len(string_hold['Genes'])).sf(len(overlap_hold)-1)
-
-                # Check overlap b/w ML Lists
-                ml_union = np.unique(list(self.ml_fdr01.EAML.dropna()) + list(self.ml_fdr01.EPI.dropna()) + list(self.ml_fdr01.EAW.dropna()))
-                ml_overlap_hold = set(overlap_hold).intersection(ml_union)
-                ml_pval = hg(M=self.num_genes, n = len(overlap_hold), N=len(ml_union)).sf(len(ml_overlap_hold)-1)
-
-                # Append to p_hold
-                temp_p = pd.DataFrame({'AC':[int(i)], 'Over-p':[pval], 'ML-p':[ml_pval]})
-                p_hold = pd.concat([p_hold, temp_p], axis =0, ignore_index=True)
-
-            # Sort p_hold and select best AC threshold
-            p_hold_sort = p_hold.sort_values(by=['Over-p', 'ML-p'], ascending=True).reset_index(drop=True)
-            print(p_hold_sort)
-            best_p = int(p_hold_sort['AC'][0])
-
-            print("The best Allele Count (AC) threshold is: AC" + str(best_p))
-
-            # Re-load pathways outputs and add to experimental output dataframes
-            react_best = pd.read_csv(self.path + "Pathway_output/AC" + str(best_p) +
-                                     "/Reactome_Cases/Step8_SigCoreGenesAbove5thPercentile.txt", sep='\t', header=None, skiprows=2, names=['Genes'])
-            string_best = pd.read_csv(self.path + "Pathway_output/AC" +
-                              str(i) + "/STRING_Cases/Step8_SigCoreGenesAbove5thPercentile.txt", sep="\t", header=None, skiprows=2, names=['Genes'])
-
-            # Create and export the experimental df with all 5 methods
-            self.fdr01_df = pd.DataFrame({'EAML': self.ml_fdr01['EAML'].dropna(), 'EPI': self.ml_fdr01['EPI'].dropna(), 'EAW': self.ml_fdr01['EAW'].dropna(), 'Reactome': react_best['Genes'], 'STRING': string_best['Genes']})
-            self.fdr001_df = pd.DataFrame({'EAML': self.ml_fdr001['EAML'].dropna(), 'EPI': self.ml_fdr001['EPI'].dropna(), 'EAW': self.ml_fdr001['EAW'].dropna(), 'Reactome': react_best.Genes, 'STRING': string_best.Genes})
 
         # Creates three sheets - Meta sheet + Consensus lists, Stats for pairwise method overlap, Count for # of methods that find a certain gene
         def consensus(self):
             def consensus5_2(self, df):
                 ### Getting consensus lists
-                list_5 = list(df.EPI.dropna()) + list(df.EAML.dropna()) + list(df.EAW.dropna()
-                                                                               ) + list(df.Reactome.dropna()) + list(df.STRING.dropna())
+                list_5 = list(df.EPI.dropna()) + list(df.EAML.dropna()) + list(df.EAW.dropna()) + list(df.Reactome.dropna()) + list(df.STRING.dropna())
                 list_5_df = pd.DataFrame({'List5': list_5})
                 list_5_group = pd.DataFrame(list_5_df.groupby("List5", as_index=False)[
                                             'List5'].agg({'Count': 'count'}))
@@ -251,8 +221,7 @@ class GetInputs():
                     self.consensus_fdr001 = self.consensus_df
 
         # Function call
-        load_ML(self)
-        load_Pathways(self)
+        LoadLists(self)
         consensus(self)
 
         # Return consensus_dfs and the background # of genes to CriteriaForSuccess.py

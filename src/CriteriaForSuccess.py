@@ -19,11 +19,7 @@ import os
 import tempfile
 import argparse
 from datetime import date
-import sys
 import multiprocessing as mp
-import itertools
-from functools import partial
-from joblib import Parallel, delayed
 
 from GetInputs import *
 from GoldStandardOverlap import *
@@ -47,6 +43,7 @@ def parse_args():
     parser.add_argument('--ExactTestPath', nargs='?', default = './', help = 'Path to .txt output from ExactTest.sh')
     parser.add_argument('--OutPutPath', nargs='?', default = './', help = 'Path to output directory')
     parser.add_argument('--nDiffusionGraph', nargs = '?', choices = ('STRINGv10', 'STRINGv11', 'MeTEOR', 'toy'), help = 'Network to use for nDiffusion')
+    parser.add_argument('--AC_Threshold', nargs='?', type = int, default =5, help = 'Select the Allele Count Threshold to include in Consensus2')
     parser.add_argument('--cores', nargs='?', type = int, default = 1, help = 'Number of cores used to run the program')
 
     return parser.parse_args()
@@ -61,13 +58,13 @@ def main(args):
 
     # 1) Load BigPipeline Output and Create Consensus Lists
     print("... Loading, Cleaning, and Preparing Big Pipeline Input...\n")
-    consensus_fdr01, consensus_fdr001, num_genes = GetInputs(args.InputPath, args.OutPutPath, args.ExperimentName).BigPipeline()
+    consensus_fdr01, consensus_fdr001, num_genes = GetInputs(args.InputPath, args.AC_Threshold, args.OutPutPath, args.ExperimentName).BigPipeline()
 
     # Load needed files for the loop
-    goldStandards = GetInputs(args.GSPath, None, None).GoldStandards()
-    mgi = GetInputs(None, None, None).MGI()
-    caseControl = GetInputs(args.CaseControlPath, None, None).CaseControl()
-    exactTest = GetInputs(args.ExactTestPath, None, None).ExactTest()
+    goldStandards = GetInputs(args.GSPath, None, None, None).GoldStandards()
+    mgi = GetInputs(None, None, None, None).MGI()
+    caseControl = GetInputs(args.CaseControlPath, None, None, None).CaseControl()
+    exactTest = GetInputs(args.ExactTestPath, None, None, None).ExactTest()
     
     # Loop through each FDR threshold here
     df_dict = {'FDR 0.1': consensus_fdr01, 'FDR 0.01': consensus_fdr001}
