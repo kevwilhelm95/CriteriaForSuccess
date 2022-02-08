@@ -10,7 +10,9 @@ Installation
 
 Usage
 Required arguments:
-Argument  Description
+| Argument | Description |
+|--------- | ----------- |
+|--ExperimentName | test |
 
 
 
