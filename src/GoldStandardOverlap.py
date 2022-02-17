@@ -91,7 +91,7 @@ class GoldStandardOverlap():
                     verticalalignment='top',
                     fontsize=14.0)
             plt.text(0, -0.78,
-                    str(overlap),
+                    ", ".join(overlap),
                     horizontalalignment='center',
                     verticalalignment='top',
                     fontsize=14.0)

@@ -3,7 +3,6 @@ from scipy.stats import hypergeom, fisher_exact
 import numpy as np
 import os
 from statsmodels.stats.multitest import fdrcorrection as fdr
-import multiprocessing as mp
 
 class MGIEnrichment():
     def __init__(self, mgi, df, df_name, experiment_name, output_path, interst_list, cores):
@@ -120,7 +119,7 @@ class MGIEnrichment():
         # Loop through each method gene list and calculate the enrichment for a phenotype in MGI
         for gL in self.interstList:
             # Create new output location for each method's enrichment
-            newMGI_outpath = self.oPath + self.consDfName + "/MGI Enrichment" + gL + "/"
+            newMGI_outpath = self.oPath + gL + '/'
             os.makedirs(newMGI_outpath, exist_ok=True)
             
             # Define output df
@@ -128,17 +127,12 @@ class MGIEnrichment():
                                            'Candidate Genes in MGIdb', '# of Candidates with Phenotypic Model',
                                            'Enrichment - p value', 'Ratio of genes with phenotypic model',
                                            'Genes with MGI Phenotype'])
-            #pool = mp.Pool(self.Cores)
             for idx in self.interst:
                 # Subset gL
                 gL_hold = self.consDf[gL].dropna()
 
                 p_df = CalculateP(self, idx, self.MGI, gL_hold)
-                #p_df = pool.map(CalculateP, args = (self, idx, self.MGI, gL_hold))
                 out_df = pd.concat([out_df, p_df], axis=0, ignore_index=True)
-
-            #pool.close()
-            #pool.join()
             
             # Calculate fdr for out_df
             out_df = out_df.sort_values("Enrichment - p value", ascending = True).reset_index(drop=True)

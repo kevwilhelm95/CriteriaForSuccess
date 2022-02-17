@@ -21,13 +21,13 @@ class GetInputs():
         self.opath = output_path
         self.expName = exp_name
 
-    def BigPipeline(self):
+    def BigPipeline(self, analysis):
         ## Define functions needed for BigPipeline
         # Loads and merges gene lists from machine learning methods
         def LoadLists(self):
             # EAML
             eaml = pd.read_csv(self.path +
-                            "EAML_output/meanMCC-results.nonzero-stats.rankings")
+                            "EAML_output/meanMCC-results.nonzero-stats.rankings.csv")
             self.num_genes = eaml.shape[0]
             eaml_fdr01 = eaml[(eaml['qvalue'] <= 0.1) & (eaml['zscore'] >= 0)]
             eaml_fdr001 = eaml[(eaml['qvalue'] <= 0.01) & (eaml['zscore'] >= 0)]
@@ -220,9 +220,23 @@ class GetInputs():
                 elif df_name == 'FDR 0.01':
                     self.consensus_fdr001 = self.consensus_df
 
+        
+        def LoadInputList(self):
+            genes = pd.read_csv(self.path, sep='\t', header = None, names = ['Genes'])
+
+            return genes
+
         # Function call
-        LoadLists(self)
-        consensus(self)
+        if analysis == 'BigPipeline':
+            LoadLists(self)
+            consensus(self)
+            
+            return self.consensus_fdr01, self.consensus_fdr001, self.num_genes
+        if analysis == 'InputList':
+            genes = LoadInputList(self)
+
+            return genes
+
 
         # Return consensus_dfs and the background # of genes to CriteriaForSuccess.py
         return self.consensus_fdr01, self.consensus_fdr001, self.num_genes
@@ -267,6 +281,6 @@ class GetInputs():
         self.exactTest['EA-Clean'] = [x.split(',')[0] for x in self.exactTest['EA']]
         self.exactTest['EA-Clean'] = [-1 if x == '.' else x for x in self.exactTest['EA-Clean']]
         self.exactTest['EA-Clean'] = self.exactTest['EA-Clean'].astype(float)
-
+        
         return self.exactTest
 
