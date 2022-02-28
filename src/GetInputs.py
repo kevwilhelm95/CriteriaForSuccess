@@ -27,7 +27,7 @@ class GetInputs():
         def LoadLists(self):
             # EAML
             eaml = pd.read_csv(self.path +
-                            "EAML_output/meanMCC-results.nonzero-stats.rankings.csv")
+                            "EAML_output/meanMCC-results.nonzero-stats.rankings")
             self.num_genes = eaml.shape[0]
             eaml_fdr01 = eaml[(eaml['qvalue'] <= 0.1) & (eaml['zscore'] >= 0)]
             eaml_fdr001 = eaml[(eaml['qvalue'] <= 0.01) & (eaml['zscore'] >= 0)]
