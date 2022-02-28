@@ -56,6 +56,8 @@ class GetOddsRatios():
         ax.scatter(matrix2.index, matrix2.OR, color='blue')
         ax.scatter(matrix1.index, matrix1.OR, color='red',
                     label='Significant Gene (q-val<0.1)')
+        ax.tick_params(axis='x', labelsize=16)
+        ax.tick_params(axis='y', labelsize=16)
         ax.axhline(y=1, color='black', linestyle='--')
         ax.legend()
         ax.set_ylabel('OR', fontsize=16)
@@ -76,13 +78,12 @@ class GetOddsRatios():
         mat1_filt = pd.concat([mat1_geq1, mat1_leq1], axis = 0)#, ignore_index=True)
 
         # Get the index of a gene in the significant gene matrix
-        for gene in mat1_filt.gene:
-            hold_df = mat1_filt[mat1_filt.gene == gene]
-            x, y = hold_df.index.tolist()[0], np.float64(hold_df.OR)
-            texts.append(ax.text(x, y, gene, fontsize=12))
+        #for gene in mat1_filt.gene:
+            #hold_df = mat1_filt[mat1_filt.gene == gene]
+            #x, y = hold_df.index.tolist()[0], np.float64(hold_df.OR)
+            #texts.append(ax.text(x, y, gene, fontsize=14))
 
-        adjust_text(texts, expand_points=(2, 2),
-                    arrowprops=dict(arrowstyle="-", lw=1), ax=ax)
+        #adjust_text(texts, expand_text=(0.3,2), force_text = (2.2,2.2), force_points=(0.2,0.2), arrowprops=dict(arrowstyle="-", lw=1), ax=ax)
 
         plt.savefig(str(outpath + experiment_name + '_' +
                         analysis + '_' + str(date) + '.png'))
@@ -314,6 +315,9 @@ class GetOddsRatios():
 
         # Loop through each variant and calculate ORs
         for v in variants:
+            #if v == 'GCSAML-AS1:p.Thr20Ala':
+                #continue
+
             a = []
             b = []
             a1 = []
@@ -321,15 +325,16 @@ class GetOddsRatios():
             AF_hold = []
             A = variants_df[variants_df.variants == v]
             ea_hold = A.EA.values[0]
-            af_hold = A.AF.values[0]
+            AF_hold = A.AF.values
             eas.append(ea_hold)
-            afs.append(af_hold)
+            afs.append(AF_hold)
             for i in A.index.tolist():
                 a += [int(A.AC_1[i])]
                 b += [int(A.AC_0[i])]
                 a1 += [int(A.AN_1[i])]
                 b1 += [int(A.AN_0[i])]
-                AF_hold += [int(A.AF[i])]
+                #AF_hold += [int(A.AF[i])]
+                #print(AF_hold)
 
             n_cases += [np.sum(a)]
             n_conts += [np.sum(b)]
