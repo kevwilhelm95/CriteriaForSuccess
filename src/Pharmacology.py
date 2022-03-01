@@ -133,10 +133,11 @@ class GetGeneDrugInteractions():
         BindingDB_accession_str = ",".join(BindingDB_accession)
 
         # Our filter - Genes, only interactions with < 200 nM, only compounds that are FDA approved
-        BindingDB_response = requests.get("http://bindingdb.org/axis2/services/BDBService/getLigandsByUniprots?uniprot=" +
-                                            BindingDB_accession_str + "&cutoff=200&code=2&response=application/json")
+        BindingDB_response = requests.get("http://bindingdb.org/axis2/services/BDBService/getLigandsByUniprots?uniprot=" + BindingDB_accession_str + "&cutoff=200&code=2&response=application/json")
+
         if BindingDB_response.status_code != 200:
             print("Error in BindingDB API Call")
+            return
 
         # Format output for return
         matchedTerms_BindingDB = pd.json_normalize(BindingDB_response.json(), record_path=[
