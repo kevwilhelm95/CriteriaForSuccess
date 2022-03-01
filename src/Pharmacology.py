@@ -142,21 +142,27 @@ class GetGeneDrugInteractions():
         matchedTerms_BindingDB = pd.json_normalize(BindingDB_response.json(), record_path=[
             'getLigandsByUniprotsResponse', 'affinities'])
 
-        # Convert accessionDict to df
-        accessionDict_df = pd.DataFrame.from_dict(
-            accessionDict, orient='index').reset_index()
-        accessionDict_df.rename(
-            columns={'index': 'gene', 0: 'accession_id'}, inplace=True)
+        if matchedTerms_BindingDB.shape[0] == 0:
+            print("No search terms found for ", method)
 
-        # Merge with matchedTerms
-        allTerms_BindingDB = pd.merge(accessionDict_df, matchedTerms_BindingDB,
-                                        left_on='accession_id', right_on='query', how='outer')
+        else:
+            # Convert accessionDict to df
+            accessionDict_df = pd.DataFrame.from_dict(
+                accessionDict, orient='index').reset_index()
+            accessionDict_df.rename(
+                columns={'index': 'gene', 0: 'accession_id'}, inplace=True)
 
-        # Write to .csv output and return
-        allTerms_BindingDB.to_csv(output_path + "/" +
-                                    self.expName + "_BindingDB_matchedTerms_DrugInteractions_" + str(date) + ".csv", index=False)
+            # Merge with matchedTerms
+            try: allTerms_BindingDB = pd.merge(accessionDict_df, matchedTerms_BindingDB,
+                                            left_on='accession_id', right_on='query', how='outer')
+            except KeyError:
+                print('No drug interactions found')
 
-        return matchedTerms_BindingDB
+            # Write to .csv output and return
+            allTerms_BindingDB.to_csv(output_path + "/" +
+                                        self.expName + "_BindingDB_matchedTerms_DrugInteractions_" + str(date) + ".csv", index=False)
+
+            return matchedTerms_BindingDB
 
 
     def main(self):
@@ -173,6 +179,4 @@ class GetGeneDrugInteractions():
         pool.close()
         pool.join()
 
-    #if __name__ == '__main__':
-        #main()
 
