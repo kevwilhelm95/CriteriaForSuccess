@@ -12,6 +12,7 @@ Installation
 |--------- | ----------- |
 |--ExperimentName | Name of disease and or cohort |
 |--InputPath | Path to BigPipeline Results |
+|--Analysis | Which input files to use; Choices = BigPipeline, InputList |
 |--GSPath | Path to CSV of Gold Standard Lists |
 |--CaseControlPath | Path to CSV; Col. 1- IDs, Col.2- 1,0 (Case,Control); No header |
 |--ExactTestPath | Path to .txt output from ExactTest.sh |
@@ -21,6 +22,7 @@ Installation
 
 | Argument | Description |
 |----------|-------------|
+|--InputList | Path to .txt file of gene list |
 |--nDiffusionGraph | Network to use for nDiffusion; Choices = "STRINGv11", "STRINGv10", "MeTeOR" |
 |--AC_Threshold | Threshold of Pathways to incorporate into Consensus2 (Default = 5) |
 |--cores | Number of cores used to run |
