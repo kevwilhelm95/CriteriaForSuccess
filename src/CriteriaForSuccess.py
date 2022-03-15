@@ -155,7 +155,7 @@ def main(args):
         consensus_fdr01, consensus_fdr001, num_genes = GetInputs(
             args.InputPath, args.AC_Threshold, args.OutPutPath, args.ExperimentName).BigPipeline(args.Analysis)
         df_dict = {'FDR 0.1': consensus_fdr01, 'FDR 0.01': consensus_fdr001}
-        interst_list = ['EPI', 'EAML', 'EAW', 'Reactome', 'STRING', 'Consensus3', 'Consensus2']
+        interst_list = ['EPI', 'EAML', 'EAW', 'Reactome', 'STRING', 'Consensus3', 'Consensus2', 'UniqLinked']
 
         # Run criteria for success
         for df_name, df in df_dict.items():

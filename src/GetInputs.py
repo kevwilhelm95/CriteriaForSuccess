@@ -9,6 +9,7 @@ import numpy as np
 import os
 import upsetplot as up
 import matplotlib.pyplot as plt
+import requests
 
 
 class GetInputs():
@@ -27,7 +28,7 @@ class GetInputs():
         def LoadLists(self):
             # EAML
             eaml = pd.read_csv(self.path +
-                            "EAML_output/meanMCC-results.nonzero-stats.rankings")
+                            "EAML_output/meanMCC-results.nonzero-stats.rankings.csv")
             self.num_genes = eaml.shape[0]
             eaml_fdr01 = eaml[(eaml['qvalue'] <= 0.1) & (eaml['zscore'] >= 0)]
             eaml_fdr001 = eaml[(eaml['qvalue'] <= 0.01) & (eaml['zscore'] >= 0)]
@@ -55,6 +56,7 @@ class GetInputs():
 
         # Creates three sheets - Meta sheet + Consensus lists, Stats for pairwise method overlap, Count for # of methods that find a certain gene
         def consensus(self):
+            # Find overlapping genes
             def consensus5_2(self, df):
                 ### Getting consensus lists
                 list_5 = list(df.EPI.dropna()) + list(df.EAML.dropna()) + list(df.EAW.dropna()) + list(df.Reactome.dropna()) + list(df.STRING.dropna())
@@ -71,6 +73,8 @@ class GetInputs():
                 #Consensus2
                 self.consensus2 = list_5_group[list_5_group.Count >= 2]
 
+
+            # Get pairwise overlap between gene lists
             def pairwise_method_overlap(self, df):
                 # From EPIMUTESTR
                 epi_eaw = df['EPI'][df['EPI'].isin(
@@ -156,6 +160,8 @@ class GetInputs():
                                     "Pval": [epi_eaw_p, epi_eaml_p, epi_reactome_p, epi_string_p, eaw_eaml_p, eaw_reactome_p, eaw_string_p, eaml_reactome_p, eaml_string_p, reactome_string_p]}
                 self.overlap_df = pd.DataFrame(overlap_out_dict)
 
+
+            # Count how many methods find a particular gene
             def geneMethodCount(self):
                 # Create holder
                 method_count_df = pd.DataFrame(columns=['Genes', '# of Methods', 'Methods'])
@@ -176,7 +182,9 @@ class GetInputs():
 
                 self.method_count_df = method_count_df.sort_values(
                     '# of Methods', ascending=False)
-                    
+
+
+            # UpsetPlot 
             def ConsensusUpSet(self, df_name):
                 contents = {'EPI': self.consensus_df.EPI.dropna(),
                             'EAW': self.consensus_df.EAW.dropna(),
@@ -186,18 +194,189 @@ class GetInputs():
                 from_contents = up.from_contents(contents)
                 up.plot(from_contents, sort_by='degree', show_counts = True)
                 plt.savefig(self.opath + df_name + "/UpSetPlot.png")
+                plt.close()
+
+
+            # Unique linked genes between methods (Tier 2 genes)
+            def UniqueLinked(self):
+                # Generalizes the API Call
+                def API_STRING(method, params):
+                    string_api_url = "https://version-11-5.string-db.org/api"
+                    output_format = 'json'
+
+                    ## Construct URL
+                    request_url = "/".join([string_api_url, output_format, method])
+
+                    ## Call STRING
+                    results = requests.post(request_url, data=params)
+
+                    ## Read and parse the results
+                    matchedTerms_STRING = pd.json_normalize(results.json())
+                    #print(matchedTerms_STRING)
+                    return(matchedTerms_STRING)
+
+                # Recalculates the combined score only using database, experimental, and coexpression evidence
+                def ReScore(df):
+                    # https://string-db.org/cgi/help.pl?&subpage=faq%23how-are-the-scores-computed
+                    # nscore = gene neighborhood score
+                    # fscore = gene fusion score
+                    # pscore = phylogenetic profile score
+                    # ascore = coexpression score
+                    # escore = experimental score
+                    # dscore = database score
+                    # tscore = textmining score
+
+                    # Set prior probability of random gene having an interaction
+                    p = 0.041
+
+                    df['ascore'] = [p if x < p else x for x in df.ascore]
+                    df['escore'] = [p if x < p else x for x in df.escore]
+                    df['dscore'] = [p if x < p else x for x in df.dscore]
+
+                    # Remove prior probability
+                    a_noprior = (df.ascore - p) / (1 - p)
+                    e_noprior = (df.escore - p) / (1 - p)
+                    d_noprior = (df.dscore - p) / (1 - p)
+
+                    # Combine scores of the channels of interest
+                    s_tot_nop = 1 - ((1 - a_noprior) *
+                                    (1 - e_noprior) * (1 - d_noprior))
+
+                    # Add prior back
+                    s_tot = s_tot_nop + p * (1 - s_tot_nop)
+
+                    df['NewCombinedScore'] = s_tot
+
+                    return df
+
+                # Get gene lists
+                consensus2 = list(self.consensus_df.Consensus2.dropna())
+                genelist = np.unique(list(self.consensus_df.EAML.dropna()) + list(self.consensus_df.EPI.dropna()) + list(self.consensus_df.EAW.dropna()) + list(self.consensus_df.Reactome.dropna()) + list(self.consensus_df.STRING.dropna()))
+                genelist = [x for x in genelist if x not in consensus2] # The unique genes identified that are not in Consensus list
+
+                # Get STRING protein ids for gene list
+                params = {
+                    "identifiers" : "\r".join(genelist),
+                    "species" : 9606,
+                    "limit" : 1,
+                    "echo_query" : 1
+                }
+                string_ids = API_STRING('get_string_ids', params)
+                
+                # Get STRING interaction network
+                params = {
+                    'identifiers' : '\r'.join(list(string_ids.preferredName)),
+                    'species' : 9606,
+                    'network_type' : 'functional',
+                    'add_nodes' : 0
+                }
+                interactions = API_STRING('network', params)
+                interactions.drop_duplicates(inplace = True)
+                
+                # Re-score interactions using only Databases, Experiments, Coexpression
+                interactions_filt = ReScore(interactions)
+                interactions_filt = interactions_filt[interactions_filt.NewCombinedScore >= 0.9].reset_index(drop=True)
+
+                # Map our gene names to STRING preferred Names
+                interactions_filt = pd.merge(interactions_filt, string_ids[['preferredName', 'queryItem']], left_on = 'preferredName_A', right_on = 'preferredName', suffixes = (None, 'A'))
+                interactions_filt = pd.merge(interactions_filt, string_ids[['preferredName', 'queryItem']], left_on = 'preferredName_B', right_on = 'preferredName', suffixes = (None, 'B'))
+                interactions_filt.rename(columns = {'queryItem': 'analysisName_A', 'queryItemB': 'analysisName_B'}, inplace = True)
+                interactions_filt.drop(columns = ['preferredName', 'preferredNameB'], inplace = True)
+
+                # Remove interactions where interaction is with a gene from same method
+                out_df = pd.DataFrame(
+                    columns=['Node1', 'Method1', 'Node2', 'Method2'])
+                uniq_linked = []
+                intra_linked_index = []
+
+                for row in range(interactions_filt.shape[0]):
+                    # Get gene names from STRING API Interaction network
+                    node1 = interactions_filt.analysisName_A[row]
+                    node2 = interactions_filt.analysisName_B[row]
+
+                    # Find the method that each gene is identified by
+                    try:
+                        method1 = self.consensus_df[self.consensus_df == node1].stack().index.tolist()[0][1]
+                        method2 = self.consensus_df[self.consensus_df == node2].stack().index.tolist()[0][1]
+                    except:
+                        continue
+
+                    if method1 == method2:
+                        intra_linked_index.append(row)
+
+                    else:
+                        uniq_linked.append(node1)
+                        uniq_linked.append(node2)
+                        out_df = out_df.append({'Node1': node1,
+                                                'Method1': method1,
+                                                'Node2': node2,
+                                                'Method2': method2
+                                                }, ignore_index=True)
+
+                interactions_filt.drop(index = intra_linked_index, inplace = True)
+
+                # Merge genes + method in which it is found into interactions dataframe
+                columns = ['Node', 'Method']
+                part1 = out_df[['Node1', 'Method1']]
+                part2 = out_df[['Node2', 'Method2']]
+
+                part1.columns, part2.columns = columns, columns
+
+                gene_method = pd.concat([part1, part2], ignore_index = True)
+                gene_method.drop_duplicates(inplace = True)
+
+                interactions_filt = pd.merge(
+                    interactions_filt, gene_method, left_on='analysisName_A', right_on='Node', suffixes=(None, '_A'))
+                interactions_filt = pd.merge(interactions_filt, gene_method,
+                                            left_on='analysisName_B', right_on='Node', suffixes=(None, '_B'))
+                interactions_filt.drop_duplicates(inplace=True)
+                interactions_filt.rename(
+                    columns={'Method': 'Method_A', 'Method_B': 'Method_B'}, inplace=True)
+                interactions_filt.drop(columns=['Node', 'Node_B'], inplace=True)
+
+                # Calculate how many genes are linked to multiple methods
+                gene_connection = pd.DataFrame(columns = ['Gene', '# of Methods Connected to'])
+                for a in list(set(uniq_linked)):
+                    hold = out_df[(out_df['Node1'] == a) | (out_df['Node2'] == a)]
+                    methods = set(list(hold.Method1) + list(hold.Method2))
+
+                    gene_connection = gene_connection.append({'Gene': a,
+                                                              '# of Methods Connected to': len(methods) - 1}, ignore_index=True)
+
+                # Merge number of methods for each gene
+                interactions_filt = pd.merge(
+                    interactions_filt, gene_connection, left_on='analysisName_A', right_on='Gene', suffixes=(None, '_A'))
+                interactions_filt = pd.merge(interactions_filt, gene_connection,
+                                            left_on='analysisName_B', right_on='Gene', suffixes=(None, '_B'))
+                interactions_filt.drop_duplicates(inplace=True)
+                interactions_filt.rename(columns={"# of Methods Connected to": "Connections_A",
+                                                "# of Methods Connected to_B": "Connections_B"}, inplace=True)
+                interactions_filt.drop(columns=['Gene', 'Gene_B'], inplace=True)
+
+
+                # Prepare files for output
+                self.consensus_df['UniqLinked'] = gene_connection.Gene
+                self.gene_connection = gene_connection.sort_values(
+                    by="# of Methods Connected to", ascending = False)
+                self.interaction_df = interactions_filt
+
+
 
             # Loop to create consensus lists for each threshold
             df_dict = {'FDR 0.1': self.fdr01_df, 'FDR 0.01': self.fdr001_df}
             for df_name, df in df_dict.items():
                 # Create directories for FDR threshold dfs
                 os.makedirs(self.opath+df_name, exist_ok=True)
+                os.makedirs(self.opath + df_name + '/STRING', exist_ok=True)
 
                 # Get consensus lists - self.all5, self.consensus4, self.consensus3, self.consensus2
                 consensus5_2(self, df)
 
                 # Get overlap stats - self.consensus_df, self.overlap_df
                 pairwise_method_overlap(self, df)
+
+                # Get the unique linked genes - self.consensus_df, self.gene_connection, self.interaction_df
+                UniqueLinked(self)
 
                 # Get the number of methods that identify each gene in Consensus2
                 geneMethodCount(self)
@@ -213,6 +392,9 @@ class GetInputs():
                         writer, sheet_name="Overlap Summary", index=False)
                     self.method_count_df.to_excel(
                         writer, sheet_name="Gene-Method Counts", index=False)
+                    self.gene_connection.to_excel(writer, sheet_name = 'UniqueLinkedCounts', index=False)
+
+                self.interaction_df.to_csv(self.opath + df_name + "/STRING/" + "UniqueLinked_STRING-InteractionFile.csv", index = False)
 
                 # Change names of consensus_df for continuing in script
                 if df_name == 'FDR 0.1':
@@ -220,7 +402,6 @@ class GetInputs():
                 elif df_name == 'FDR 0.01':
                     self.consensus_fdr001 = self.consensus_df
 
-        
         def LoadInputList(self):
             genes = pd.read_csv(self.path, sep='\t', header = None, names = ['Genes'])
 
@@ -232,6 +413,8 @@ class GetInputs():
             consensus(self)
             
             return self.consensus_fdr01, self.consensus_fdr001, self.num_genes
+
+
         if analysis == 'InputList':
             genes = LoadInputList(self)
 
