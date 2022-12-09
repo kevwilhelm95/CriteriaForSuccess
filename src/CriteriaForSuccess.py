@@ -79,8 +79,8 @@ def ParseNetwork(network_str):
     Returns:
         type????: network file containing node1, node2, and weight of the network to use
     """
-    network_opts = {'STRINGv10': os.path.dirname(os.getcwd()) + '/refs/STRING_v10.txt',
-                   'STRINGv11': os.path.dirname(os.getcwd()) + '/refs/STRING_v11.txt',
+    network_opts = {'STRINGv10': os.path.dirname(os.getcwd()) + '/refs/STRINGv10.txt',
+                   'STRINGv11': os.path.dirname(os.getcwd()) + '/refs/STRINGv11.txt',
                    'MeTEOR': os.path.dirname(os.getcwd()) + '/refs/MeTEOR.txt',
                    'toy': os.path.dirname(os.getcwd()) + '/refs/toy_network.txt'}
     networkPath = network_opts[network_str]
