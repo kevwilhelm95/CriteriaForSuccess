@@ -39,9 +39,8 @@ def parse_args():
     '''
     parser = argparse.ArgumentParser(description = "Criteria For Success Arguments")
     parser.add_argument('--ExperimentName', nargs='?', default = 'Criteria for Success', help = 'Name of disease and/or cohort')
-    parser.add_argument('--InputPath', nargs='?', default = './', help = 'path to Big Pipeline Results directory')
-    parser.add_argument('--InputList', nargs='?', default = './', help = 'Path to .txt file of gene list')
-    parser.add_argument('--Analysis', nargs='?', choices=('BigPipeline', 'InputList')) ### Can hard code this in based on if values above are empty or not
+    parser.add_argument('--InputPath', nargs='?', default = None, help = 'path to Big Pipeline Results directory')
+    parser.add_argument('--InputList', nargs='?', default = None, help = 'Path to .txt file of gene list')
     parser.add_argument('--PickExperiments', nargs='?', default = 'All', help = "No-space, comma-separated list of experiments to run (i.e. GS Overlap,OR)")
     parser.add_argument('--PickNetwork', nargs = '?', choices = ('STRINGv10', 'STRINGv11', 'MeTEOR', 'toy'), help = 'Network to use for nDiffusion')
     parser.add_argument('--GSPath', nargs='?', default = './', help = 'Path to CSV of Gold Standard Lists')
@@ -119,6 +118,14 @@ def ParseInputFiles(arguments, experiments_lst):
         fileDict['CaseControl'] = GetInputs(args.CaseControlPath, None,None, None).CaseControl()
         fileDict['ExactTest'] = GetInputs(args.ExactTestPath, None, None, None).ExactTest()
     return fileDict
+
+def ParseInputPaths(arguments):
+
+    if arguments.InputPath == None:
+        analysis = "InputList"
+    elif arguments.InputList == None:
+        analysis = "BigPipeline"
+    return analysis
 
 # Function create intermediate files for and run nDiffusion
 def RunnDiffusion(df, df_name, G_main, graph_gene, goldStandards, interst_list, nDiffOutPutPath):
@@ -198,9 +205,12 @@ def main(args):
     # Load required files based on experiments chosen
     inputFileDict = ParseInputFiles(args, ExpToRun)
 
+    # Determine which analysis to run based on declaration of InputPath or InputList
+    analysis = ParseInputPaths(args)
+
     # Load BigPipeline Output and Create Consensus Lists
-    print("... Loading, Cleaning, and Preparing Big Pipeline Input...\n")
-    if args.Analysis == 'BigPipeline':
+    if analysis == 'BigPipeline':
+        print("... Preparing BigPipeline Input...\n")
         # Load and parse the input files
         consensus_fdr01, consensus_fdr001, num_genes = GetInputs(
             args.InputPath, args.AC_Threshold, args.OutPutPath, args.ExperimentName).BigPipeline(args.Analysis)
@@ -213,7 +223,8 @@ def main(args):
             RunCriteriaForSuccess(df, df_name, interst_list, num_genes, ExpToRun, inputFileDict, args)
 
     # 1B) Load input gene list and run Criteria for Success
-    if args.Analysis == 'InputList':
+    if analysis == 'InputList':
+        print("... Preparing InputList...\n")
         # Get input list
         gL_input = GetInputs(
             args.InputList, args.AC_Threshold, args.OutPutPath, args.ExperimentName).BigPipeline(args.Analysis)
