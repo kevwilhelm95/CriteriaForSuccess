@@ -95,8 +95,14 @@ def ParseInputFiles(arguments, experiments_lst):
     Returns:
         pd.DataFrame: Dataframes of supplementary data needed for experiments
     """
+    fileDict = {'Gold Standards' : None,
+                'PPI Network' : None,
+                'MGI' : None,
+                'CaseControl' : None,
+                'ExactTest' : None}
+
     if any(check in ['GS Overlap', 'nDiffusion'] for check in experiments_lst):
-        goldStandards = GetInputs(arguments.GSPath, None, None, None).GoldStandards()
+        fileDict['GoldStandards'] = GetInputs(arguments.GSPath, None, None, None).GoldStandards()
     if any(check in ['nDiffusion'] for check in experiments_lst):
         ppi_network = ParseNetwork(arguments.PickNetwork)
     if any(check in ['MGI'] for check in experiments_lst):
@@ -104,12 +110,6 @@ def ParseInputFiles(arguments, experiments_lst):
     if any(check in ['OR'] for check in experiments_lst):
         caseControl = GetInputs(args.CaseControlPath, None,None, None).CaseControl()
         exactTest = GetInputs(args.ExactTestPath, None, None, None).ExactTest()
-
-    fileDict = {'Gold Standards' : goldStandards,
-                'PPI Network' : ppi_network,
-                'MGI' : mgi,
-                'CaseControl' : caseControl,
-                'ExactTest' : exactTest}
     return fileDict
 
 # Function create intermediate files for and run nDiffusion
