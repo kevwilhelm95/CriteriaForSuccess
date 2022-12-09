@@ -53,6 +53,7 @@ def parse_args():
 
     return parser.parse_args()
 
+# Test which experiments to run
 def ParseExperiments(experiments_str):
     """Function to parse the experiments to run
 
@@ -68,6 +69,7 @@ def ParseExperiments(experiments_str):
     print("Experiments to run: ", experiments_lst)
     return experiments_lst
 
+# Load the PPI Network file
 def ParseNetwork(network_str):
     """Function to pick and load the network of choice
 
@@ -77,14 +79,24 @@ def ParseNetwork(network_str):
     Returns:
         type????: network file containing node1, node2, and weight of the network to use
     """
-    network_opts = {'STRINGv10': os.getcwd() + '/nDiffusion/data/networks/STRING_v10.txt',
-                   'STRINGv11': os.getcwd() + '/nDiffusion/data/networks/STRING_v11.txt',
-                   'MeTEOR': os.getcwd() + '/nDiffusion/data/networks/MeTEOR.txt',
-                   'toy': os.getcwd() + '/nDiffusion/data/networks/toy_network.txt'}
+    network_opts = {'STRINGv10': os.getcwd() + '../refs/STRING_v10.txt',
+                   'STRINGv11': os.getcwd() + '../refs/STRING_v11.txt',
+                   'MeTEOR': os.getcwd() + '../refs/MeTEOR.txt',
+                   'toy': os.getcwd() + '../refs/toy_network.txt'}
     networkPath = network_opts[network_str]
     G_main = nx.read_edgelist(open(networkPath, 'r'), data=(('weight', float),))
-    return G_main
+    
+    graph_gene = []
+    if network_str == 'MeTEOR':
+        for line in open(networkPath).readlines():
+            line = line.strip('\n').split('\t')
+            for i in line[:2]:
+                if ':' not in i:
+                    graph_gene.append(i)
 
+    return G_main, graph_gene
+
+# Test which files we need based on the experiments to be run
 def ParseInputFiles(arguments, experiments_lst):
     """Load files based on experiments needing to be run
 
@@ -93,18 +105,14 @@ def ParseInputFiles(arguments, experiments_lst):
         experiments_lst (list): Parsed experiments to run list
 
     Returns:
-        pd.DataFrame: Dataframes of supplementary data needed for experiments
+        dict: dictionary of pd.DataFrames containing secondary data
     """
-    fileDict = {'Gold Standards' : None,
-                'PPI Network' : None,
-                'MGI' : None,
-                'CaseControl' : None,
-                'ExactTest' : None}
+    fileDict = {}
 
     if any(check in ['GS Overlap', 'nDiffusion'] for check in experiments_lst):
         fileDict['Gold Standards'] = GetInputs(arguments.GSPath, None, None, None).GoldStandards()
     if any(check in ['nDiffusion'] for check in experiments_lst):
-        fileDict['PPI Network'] = ParseNetwork(arguments.PickNetwork)
+        fileDict['PPI Network'], fileDict['PPI Network-GraphGene'] = ParseNetwork(arguments.PickNetwork)
     if any(check in ['MGI'] for check in experiments_lst):
         fileDict['MGI'] = GetInputs(None, None, None, None).MGI()
     if any(check in ['OR'] for check in experiments_lst):
@@ -113,23 +121,7 @@ def ParseInputFiles(arguments, experiments_lst):
     return fileDict
 
 # Function create intermediate files for and run nDiffusion
-def RunnDiffusion(df, df_name, G_main, goldStandards, interst_list, nDiffOutPutPath):
-    # Parse network input from args
-    network_opts = {'STRINGv10':os.getcwd() + '/nDiffusion/data/networks/STRING_v10.txt',
-                        'STRINGv11':os.getcwd() + '/nDiffusion/data/networks/STRINGv11.txt',
-                        'MeTEOR':os.getcwd() + '/nDiffusion/data/networks/MeTEOR.txt',
-                        'toy':os.getcwd() + '/nDiffusion/data/networks/toy_network.txt'}
-    networkPath = network_opts[args.nDiffusionGraph]
-
-    # Get the genes for multimodal networks
-    graph_gene = []
-    if args.nDiffusionGraph == 'MeTeOR':
-        for line in open(networkPath).readlines():
-            line = line.strip('\n').split('\t')
-            for i in line[:2]:
-                if ':' not in i:
-                    graph_gene.append(i)
-
+def RunnDiffusion(df, df_name, G_main, graph_gene, goldStandards, interst_list, nDiffOutPutPath):
     #Prepare input files
     processes = []
 
@@ -170,7 +162,7 @@ def RunCriteriaForSuccess(df, df_name, interst_list, num_genes, experiments, inp
         # Create output path
         nDiffOutPutPath = arguments.OutPutPath + df_name + "/nDiffusion/"
         os.makedirs(nDiffOutPutPath, exist_ok = True)
-        RunnDiffusion(df, df_name, input_file_dict['PPI Network'], input_file_dict['Gold Standards'], interst_list, nDiffOutPutPath)
+        RunnDiffusion(df, df_name, input_file_dict['PPI Network'], input_file_dict['PPI Network-GraphGene'], input_file_dict['Gold Standards'], interst_list, nDiffOutPutPath)
 
     # --- MGI Enrichment --- #
     if "MGI" in experiments:
