@@ -201,6 +201,8 @@ def RunCriteriaForSuccess(df, df_name, interst_list, num_genes, experiments, inp
 
 def main(args):
     # Determine which experiments to run
+    print(args.PickExperiments)
+    print(type(args.PickExperiments))
     ExpToRun = ParseExperiments(args.PickExperiments)
 
     # Load required files based on experiments chosen
