@@ -65,6 +65,7 @@ def ParseExperiments(experiments_str):
     experiments_lst = ",".split(experiments_str)
     if 'All' in experiments_lst:
         experiments_lst = ['GS Overlap', 'nDiffusion', 'MGI', 'OR', 'Pharmacology']
+    print("Experiments to run: ", experiments_lst)
     return experiments_lst
 
 def ParseNetwork(network_str):
