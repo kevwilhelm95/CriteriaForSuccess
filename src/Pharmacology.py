@@ -31,8 +31,11 @@ class GetGeneDrugInteractions():
 
         # Loop through genes and request accession number from UniProt
         for gene in genes:
-            response = requests.get("https://www.uniprot.org/uniprot/?query=gene_exact:" + gene +
-                                    "+AND+organism:9606&columns=id,genes(PREFERRED),genes(ALTERNATIVE)&format=tab")
+            response = requests.get("https://rest.uniprot.org/uniprotkb/search?query=(reviewed:true)+AND+" \
+                        "(gene_exact:" + gene + ")"
+                        "+AND+(taxonomy_id:9606)" \
+                        "&columns=id,genes(PREFERRED),genes(ALTERNATIVE)" \
+                        "&format=tsv")
             if response.status_code != 200:
                 print("Error in UniProt API call for " + gene)
                 continue

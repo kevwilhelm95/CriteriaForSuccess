@@ -35,6 +35,7 @@ class GetOddsRatios():
         hold_genes = list(self.consDf[method].dropna())
         exactTest_method = self.exactTest[self.exactTest.gene.isin(
             hold_genes)]
+        #exactTest_method['EA-Clean'].mask(exactTest_method['EA-Clean'] == '.', np.nan, inplace = True)
 
         # Split exactTest into rare and common variants
         variants_rare = exactTest_method[exactTest_method.AF <= 0.01]
@@ -123,12 +124,20 @@ class GetOddsRatios():
 
         # Loop and get total alleles in cases and controls for rare variants
         for i in df.index.tolist():
-            var = str(df.HGVSp[i].split(':')[1])
+            try: var = str(df.HGVSp[i].split(':')[1])
+            except IndexError:
+                continue
             if 'Ter' in var:
                 ea = 100
+                ea_hold += [float(ea)]
             else:
                 ea = df.EA[i].split(',')[0]
-            ea_hold += [float(ea)]
+                if ea == '.':
+                    ea = np.nan
+                    ea_hold += [ea]
+                else:
+                    ea_hold += [float(ea)]
+            #ea_hold += [float(ea)]
             vars_hold += [var + "- EA(" + str(ea) + ")"]
             #vars_hold += [str(df.HGVSp[i].split(':')[1])]
             cases += [int(df.Cases[i].split(',')[2])]
@@ -184,11 +193,12 @@ class GetOddsRatios():
     # Calculate the FDR for observed ORs
     def ORFdr(self, ORmatrix):
         pvals = list(ORmatrix['pvalue'])
-        qvals = multipletests(
-            pvals, alpha=0.05, method='fdr_bh', is_sorted=True)[1]
-        #qvals = multipletests(pvals, alpha = 0.05, method='fdr_bh', is_sorted = False)[1]#bonferroni, fdr_bh
-        ORmatrix['qvalue'] = qvals
-        return qvals, ORmatrix
+        if len(pvals) != 0:
+            qvals = multipletests(
+                pvals, alpha=0.05, method='fdr_bh', is_sorted=True)[1]
+            #qvals = multipletests(pvals, alpha = 0.05, method='fdr_bh', is_sorted = False)[1]#bonferroni, fdr_bh
+            ORmatrix['qvalue'] = qvals
+            return qvals, ORmatrix
 
 
     # Calculate and plot ORs for variants grouped by gene (Only including variants with AF < 0.01)
@@ -259,18 +269,22 @@ class GetOddsRatios():
         # Sort and filter out dmatrix for plotting and saving to summary table
         dmatrix1 = dmatrix.sort_values(
             by='pvalue', axis=0, ascending=True, inplace=False)
-        qval, dmatrix2 = self.ORFdr(dmatrix1)
+        if dmatrix1.shape[0] != 0:
+            qval, dmatrix2 = self.ORFdr(dmatrix1)
+        else:
+            dmatrix2 = dmatrix1
         dmatrix3 = dmatrix2.sort_values(
-            by='OR', axis=0, ascending=True, inplace=False).reset_index()
+                by='OR', axis=0, ascending=True, inplace=False).reset_index()
+            
         dmatrix3.to_csv(outpath + self.expName + '_' + analysis +
-                        '_Gene-Based_' + str(date) + '.csv', index=False)
+                    '_Gene-Based_' + str(date) + '.csv', index=False)
         matrix1 = dmatrix3[dmatrix3['qvalue'] < 0.1] # Matrix 1 = significant genes
         matrix1 = matrix1[((matrix1['UpperCI'] > 1) & (matrix1['LowerCI'] > 1)) | ((matrix1['UpperCI'] < 1) & (matrix1['LowerCI'] < 1))]
         matrix2 = dmatrix3[dmatrix3['qvalue'] > 0.1]
 
         # Plotting case and control counts by gene
         for gene in matrix1.gene.unique():
-            variants_df_hold = variants_df[variants_df.gene == gene]
+            variants_df_hold = variants_df[variants_df.gene == gene].reset_index(drop = True)
             self.PlotEABar(variants_df_hold, gene, outpath,
                         self.expName, analysis, date)
 
@@ -348,7 +362,8 @@ class GetOddsRatios():
             oddsratio, pvalue = stats.fisher_exact(
                 [gene_counts, no_gene_counts])
             if AF_hold[0] >= 0.5:
-                oddsratio = 1/oddsratio
+                try: oddsratio = 1/oddsratio
+                except ZeroDivisionError: oddsratio = oddsratio
             # Calculate CIs
             if np.sum(a) == 0 or np.sum(b) == 0 or c == 0 or d == 0:
                 upper_CI = np.nan
@@ -379,7 +394,10 @@ class GetOddsRatios():
 
         dmatrix1 = dmatrix.sort_values(
             by='pvalue', axis=0, ascending=True, inplace=False)
-        qval, dmatrix2 = self.ORFdr(dmatrix1)
+        if dmatrix1.shape[0] != 0:
+            qval, dmatrix2 = self.ORFdr(dmatrix1)
+        else:
+            dmatrix2 = dmatrix1
         dmatrix3 = dmatrix2.sort_values(
             by='OR', axis=0, ascending=True, inplace=False).reset_index(drop=True)
         dmatrix3.to_csv(outpath + self.expName + '_' + analysis +

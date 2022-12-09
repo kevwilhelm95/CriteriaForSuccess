@@ -1,7 +1,8 @@
 import pandas as pd
 from scipy.stats import hypergeom as hg
 from matplotlib import pyplot as plt
-from matplotlib_venn import venn2_unweighted
+#from matplotlib_venn import venn2_unweighted
+from matplotlib_venn import venn2
 import os
 
 
@@ -68,7 +69,7 @@ class GoldStandardOverlap():
 
             # Plot figure
             fig = plt.figure(figsize=(10, 5))
-            out = venn2_unweighted(subsets=((len(exp_hold) - len(overlap)),
+            out = venn2(subsets=((len(exp_hold) - len(overlap)),
                                             (len(gs_hold) - len(overlap)),
                                             len(overlap)),
                                 set_labels=(exp, gs),
@@ -110,5 +111,4 @@ class GoldStandardOverlap():
                 out_df = pd.concat([out_df, hold_out], axis = 0, ignore_index=True)
 
         out_df.to_csv(self.oPath + self.expName + "_GoldStandardOverlap_Summary.csv", index=False)
-
 

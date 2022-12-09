@@ -20,10 +20,11 @@ import tempfile
 import argparse
 from datetime import date
 import multiprocessing as mp
+import networkx as nx
 
 from GetInputs import *
 from GoldStandardOverlap import *
-from nDiffusion.src.run_Diffusion_Class import *
+from nDiffusion.src.run_Diffusion_Class_v2 import *
 from MGIEnrichment import *
 from OddsRatios import *
 from Pharmacology import *
@@ -53,49 +54,57 @@ def parse_args():
 
 
 # Function create intermediate files for and run nDiffusion
-def RunnDiffusion(df, df_name, goldStandards, interst_list, nDiffOutPutPath):
+def RunnDiffusion(df, df_name, G_main, goldStandards, interst_list, nDiffOutPutPath):
     # Parse network input from args
     network_opts = {'STRINGv10':os.getcwd() + '/nDiffusion/data/networks/STRING_v10.txt',
-                        'STRINGv11':os.getcwd() + '/nDiffusion/data/networks/STRING_v11.txt',
+                        'STRINGv11':os.getcwd() + '/nDiffusion/data/networks/STRINGv11.txt',
                         'MeTEOR':os.getcwd() + '/nDiffusion/data/networks/MeTEOR.txt',
                         'toy':os.getcwd() + '/nDiffusion/data/networks/toy_network.txt'}
     networkPath = network_opts[args.nDiffusionGraph]
 
+    # Get the genes for multimodal networks
+    graph_gene = []
+    if args.nDiffusionGraph == 'MeTeOR':
+        for line in open(networkPath).readlines():
+            line = line.strip('\n').split('\t')
+            for i in line[:2]:
+                if ':' not in i:
+                    graph_gene.append(i)
+
     #Prepare input files
-    pool = mp.Pool(int(args.cores))
+    processes = []
+
+    #for i in int(args.cores):
+        #print('registering process %d' %i)
+        #processes.append(Process(target=nDiffusion, ))
+
+    #pool = mp.Pool(int(args.cores))
     for gL in interst_list:
         for gS in goldStandards.columns:
             gL_hold = df[gL].dropna()
             gS_hold = goldStandards[gS].dropna()
-
-            # Create input text files for nDiffusion input
-            temp_gL = tempfile.NamedTemporaryFile(
-                    prefix=gL + "_", suffix='.txt', delete=False)
-            temp_gL.write(bytes("\n".join(list(gL_hold)), 'utf-8'))
-            temp_gL.seek(0)
-            temp_gL.close()
-
-            temp_gS = tempfile.NamedTemporaryFile(
-                    prefix=gS + "_", suffix='.txt', delete=False)
-            temp_gS.write(bytes("\n".join(list(gS_hold)), 'utf-8'))
-            temp_gS.seek(0)
-            temp_gS.close()
 
             # Set new output path
             nDiffOutPutPath = args.OutPutPath + df_name + \
                     "/nDiffusion/" + gL + ' v. ' + gS + "/"
             os.makedirs(nDiffOutPutPath, exist_ok=True)
 
-            # Run async pooling for nDiffusion
-            pool.apply(nDiffusion, args=(
-                    networkPath, temp_gL.name, gL, temp_gS.name, gS, nDiffOutPutPath))
+            print('registering process %s' % gS)
+            processes.append(Process(target = nDiffusion, args = ( (G_main, graph_gene, gL_hold, gL, gS_hold, gS, nDiffOutPutPath) )))
 
-    pool.close()
-    pool.join()
-    pool.terminate()
+
+            # Run async pooling for nDiffusion
+            #pool.apply(nDiffusion, args=(G_main, graph_gene, temp_gL.name, gL, temp_gS.name, gS, nDiffOutPutPath))
+            #pool.apply_async(nDiffusion, args = (G_main, graph_gene, gL_hold, gL, gS_hold, gS, nDiffOutPutPath))
+
+    for process in processes:
+        process.start()
+
+    for process in processes:
+        process.join()
 
 # Function holding calls to external scripts
-def RunCriteriaForSuccess(df, df_name, interst_list, num_genes, goldStandards, mgi, caseControl, exactTest, experimentName, outPath, cores):
+def RunCriteriaForSuccess(df, df_name, interst_list, num_genes, G_main, goldStandards, mgi, caseControl, exactTest, experimentName, outPath, cores):
 
     # --- 2) Calculate Overlap with Known Disease Gold Standards --- #
     print("... Calculating Gold Standard Overlap for " + df_name + "...\n")
@@ -110,7 +119,7 @@ def RunCriteriaForSuccess(df, df_name, interst_list, num_genes, goldStandards, m
     # Create output path
     nDiffOutPutPath = args.OutPutPath + df_name + "/nDiffusion/"
     os.makedirs(nDiffOutPutPath, exist_ok = True)
-    RunnDiffusion(df, df_name, goldStandards, interst_list, nDiffOutPutPath)
+    RunnDiffusion(df, df_name, G_main, goldStandards, interst_list, nDiffOutPutPath)
 
 
     # --- 4) MGI Enrichment --- #
@@ -148,18 +157,27 @@ def main(args):
     mgi = GetInputs(None, None, None, None).MGI()
     caseControl = GetInputs(args.CaseControlPath, None,None, None).CaseControl()
     exactTest = GetInputs(args.ExactTestPath, None, None, None).ExactTest()
+    
+    # Load STRING network of choice
+    network_opts = {'STRINGv10': os.getcwd() + '/nDiffusion/data/networks/STRING_v10.txt',
+                   'STRINGv11': os.getcwd() + '/nDiffusion/data/networks/STRING_v11.txt',
+                   'MeTEOR': os.getcwd() + '/nDiffusion/data/networks/MeTEOR.txt',
+                   'toy': os.getcwd() + '/nDiffusion/data/networks/toy_network.txt'}
+    networkPath = network_opts[args.nDiffusionGraph]
+    G_main = nx.read_edgelist(open(networkPath, 'r'), data=(('weight', float),))
+    
 
     # 1A) Load BigPipeline Output and Create Consensus Lists
     print("... Loading, Cleaning, and Preparing Big Pipeline Input...\n")
     if args.Analysis == 'BigPipeline':
         consensus_fdr01, consensus_fdr001, num_genes = GetInputs(
             args.InputPath, args.AC_Threshold, args.OutPutPath, args.ExperimentName).BigPipeline(args.Analysis)
-        df_dict = {'FDR 0.1': consensus_fdr01, 'FDR 0.01': consensus_fdr001}
+        df_dict = {'FDR_0.1': consensus_fdr01, 'FDR_0.01': consensus_fdr001}
         interst_list = ['EPI', 'EAML', 'EAW', 'Reactome', 'STRING', 'Consensus3', 'Consensus2', 'UniqLinked']
 
         # Run criteria for success
         for df_name, df in df_dict.items():
-            RunCriteriaForSuccess(df, df_name, interst_list, num_genes, goldStandards, mgi, caseControl, exactTest, args.ExperimentName, args.OutPutPath, args.cores)
+            RunCriteriaForSuccess(df, df_name, interst_list, num_genes, G_main, goldStandards, mgi, caseControl, exactTest, args.ExperimentName, args.OutPutPath, args.cores)
 
     # 1B) Load input gene list and run Criteria for Success
     if args.Analysis == 'InputList':
@@ -170,7 +188,7 @@ def main(args):
         num_genes = 19872
 
         # Run criteria for success
-        RunCriteriaForSuccess(gL_input, 'Input-List', gL_input.columns, num_genes, goldStandards, mgi, caseControl, exactTest, args.ExperimentName, args.OutPutPath, args.cores)
+        RunCriteriaForSuccess(gL_input, 'Input-List', gL_input.columns, num_genes, G_main, goldStandards, mgi, caseControl, exactTest, args.ExperimentName, args.OutPutPath, args.cores)
     
 
 
@@ -181,5 +199,6 @@ if __name__ == '__main__':
     # Analyze time
     executionTime = (time.time() - startTime)
     print('Execution time in minutes: ' + str(executionTime/60))
+
 
 

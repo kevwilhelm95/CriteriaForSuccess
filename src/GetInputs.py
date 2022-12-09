@@ -28,7 +28,7 @@ class GetInputs():
         def LoadLists(self):
             # EAML
             eaml = pd.read_csv(self.path +
-                            "EAML_output/meanMCC-results.nonzero-stats.rankings.csv")
+                               "EAML_output/meanMCC-results.nonzero-stats.rankings", sep = ',')
             self.num_genes = eaml.shape[0]
             eaml_fdr01 = eaml[(eaml['qvalue'] <= 0.1) & (eaml['zscore'] >= 0)]
             eaml_fdr001 = eaml[(eaml['qvalue'] <= 0.01) & (eaml['zscore'] >= 0)]
@@ -363,7 +363,7 @@ class GetInputs():
 
 
             # Loop to create consensus lists for each threshold
-            df_dict = {'FDR 0.1': self.fdr01_df, 'FDR 0.01': self.fdr001_df}
+            df_dict = {'FDR_0.1': self.fdr01_df, 'FDR_0.01': self.fdr001_df}
             for df_name, df in df_dict.items():
                 # Create directories for FDR threshold dfs
                 os.makedirs(self.opath+df_name, exist_ok=True)
@@ -397,9 +397,9 @@ class GetInputs():
                 self.interaction_df.to_csv(self.opath + df_name + "/STRING/" + "UniqueLinked_STRING-InteractionFile.csv", index = False)
 
                 # Change names of consensus_df for continuing in script
-                if df_name == 'FDR 0.1':
+                if df_name == 'FDR_0.1':
                     self.consensus_fdr01 = self.consensus_df
-                elif df_name == 'FDR 0.01':
+                elif df_name == 'FDR_0.01':
                     self.consensus_fdr001 = self.consensus_df
 
         def LoadInputList(self):
