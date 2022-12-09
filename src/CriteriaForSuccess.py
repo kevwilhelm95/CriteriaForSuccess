@@ -104,12 +104,12 @@ def ParseInputFiles(arguments, experiments_lst):
     if any(check in ['GS Overlap', 'nDiffusion'] for check in experiments_lst):
         fileDict['Gold Standards'] = GetInputs(arguments.GSPath, None, None, None).GoldStandards()
     if any(check in ['nDiffusion'] for check in experiments_lst):
-        ppi_network = ParseNetwork(arguments.PickNetwork)
+        fileDict['PPI Network'] = ParseNetwork(arguments.PickNetwork)
     if any(check in ['MGI'] for check in experiments_lst):
-        mgi = GetInputs(None, None, None, None).MGI()
+        fileDict['MGI'] = GetInputs(None, None, None, None).MGI()
     if any(check in ['OR'] for check in experiments_lst):
-        caseControl = GetInputs(args.CaseControlPath, None,None, None).CaseControl()
-        exactTest = GetInputs(args.ExactTestPath, None, None, None).ExactTest()
+        fileDict['CaseControl'] = GetInputs(args.CaseControlPath, None,None, None).CaseControl()
+        fileDict['ExactTest'] = GetInputs(args.ExactTestPath, None, None, None).ExactTest()
     return fileDict
 
 # Function create intermediate files for and run nDiffusion
@@ -205,7 +205,6 @@ def main(args):
 
     # Load required files based on experiments chosen
     inputFileDict = ParseInputFiles(args, ExpToRun)
-    print(type(inputFileDict['Gold Standards']))
 
     # Load BigPipeline Output and Create Consensus Lists
     print("... Loading, Cleaning, and Preparing Big Pipeline Input...\n")
