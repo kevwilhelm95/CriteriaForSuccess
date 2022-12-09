@@ -102,7 +102,7 @@ def ParseInputFiles(arguments, experiments_lst):
                 'ExactTest' : None}
 
     if any(check in ['GS Overlap', 'nDiffusion'] for check in experiments_lst):
-        fileDict['GoldStandards'] = GetInputs(arguments.GSPath, None, None, None).GoldStandards()
+        fileDict['Gold Standards'] = GetInputs(arguments.GSPath, None, None, None).GoldStandards()
     if any(check in ['nDiffusion'] for check in experiments_lst):
         ppi_network = ParseNetwork(arguments.PickNetwork)
     if any(check in ['MGI'] for check in experiments_lst):
