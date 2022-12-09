@@ -62,7 +62,7 @@ def ParseExperiments(experiments_str):
     Returns:
         list: parsed list of experiments needing to be run
     """
-    experiments_lst = ",".split(experiments_str)
+    experiments_lst = experiments_str.split(",")
     if 'All' in experiments_lst:
         experiments_lst = ['GS Overlap', 'nDiffusion', 'MGI', 'OR', 'Pharmacology']
     print("Experiments to run: ", experiments_lst)
@@ -201,8 +201,6 @@ def RunCriteriaForSuccess(df, df_name, interst_list, num_genes, experiments, inp
 
 def main(args):
     # Determine which experiments to run
-    print(args.PickExperiments)
-    print(type(args.PickExperiments))
     ExpToRun = ParseExperiments(args.PickExperiments)
 
     # Load required files based on experiments chosen
