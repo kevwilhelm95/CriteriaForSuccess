@@ -205,6 +205,7 @@ def main(args):
 
     # Load required files based on experiments chosen
     inputFileDict = ParseInputFiles(args, ExpToRun)
+    print(type(inputFileDict['Gold Standards']))
 
     # Load BigPipeline Output and Create Consensus Lists
     print("... Loading, Cleaning, and Preparing Big Pipeline Input...\n")
