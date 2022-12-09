@@ -119,6 +119,7 @@ def ParseInputFiles(arguments, experiments_lst):
         fileDict['ExactTest'] = GetInputs(args.ExactTestPath, None, None, None).ExactTest()
     return fileDict
 
+# Test which analysis to run based on declaration of InputPath or InputList
 def ParseInputPaths(arguments):
 
     if arguments.InputPath == None:
@@ -213,7 +214,7 @@ def main(args):
         print("... Preparing BigPipeline Input...\n")
         # Load and parse the input files
         consensus_fdr01, consensus_fdr001, num_genes = GetInputs(
-            args.InputPath, args.AC_Threshold, args.OutPutPath, args.ExperimentName).BigPipeline(args.Analysis)
+            args.InputPath, args.AC_Threshold, args.OutPutPath, args.ExperimentName).BigPipeline(analysis)
         # Define parameters for input data
         df_dict = {'FDR_0.1': consensus_fdr01, 'FDR_0.01': consensus_fdr001}
         interst_list = ['EPI', 'EAML', 'EAW', 'Reactome', 'STRING', 'Consensus3', 'Consensus2']
@@ -227,7 +228,7 @@ def main(args):
         print("... Preparing InputList...\n")
         # Get input list
         gL_input = GetInputs(
-            args.InputList, args.AC_Threshold, args.OutPutPath, args.ExperimentName).BigPipeline(args.Analysis)
+            args.InputList, args.AC_Threshold, args.OutPutPath, args.ExperimentName).BigPipeline(analysis)
         # Set number of discoverable genes - Currently from MS
         num_genes = 19872
 
