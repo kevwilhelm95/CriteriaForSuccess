@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+from GetInputs import *
 
 
 # Test which experiments to run
@@ -65,8 +66,8 @@ def ParseInputFiles(arguments, experiments_lst):
     if any(check in ['MGI'] for check in experiments_lst):
         fileDict['MGI'] = GetInputs(None, None, None, None).MGI()
     if any(check in ['OR'] for check in experiments_lst):
-        fileDict['CaseControl'] = GetInputs(args.CaseControlPath, None,None, None).CaseControl()
-        fileDict['ExactTest'] = GetInputs(args.ExactTestPath, None, None, None).ExactTest()
+        fileDict['CaseControl'] = GetInputs(arguments.CaseControlPath, None,None, None).CaseControl()
+        fileDict['ExactTest'] = GetInputs(arguments.ExactTestPath, None, None, None).ExactTest()
     return fileDict
 
 # Test which analysis to run based on declaration of InputPath or InputList
