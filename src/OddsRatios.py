@@ -8,6 +8,7 @@ import datetime
 import matplotlib.pyplot as plt
 import multiprocessing as mp
 import math
+from helper_functions import CreateDir
 
 # Define odds ratio class
 class GetOddsRatios():
@@ -418,8 +419,7 @@ class GetOddsRatios():
         date = datetime.date.today()
         for method in self.methodList:
             # Create new output path
-            newOROutPath = self.oPath + method
-            os.makedirs(newOROutPath, exist_ok = True)
+            newOROutPath = CreateDir(self.oPath, method)
             
             # Clean files
             variants_rare, variants_common = self.CleanInputs(method)

@@ -92,16 +92,14 @@ def RunCriteriaForSuccess(df, df_name, interst_list, num_genes, experiments, inp
     if "nDiffusion" in experiments:
         print("... Running nDiffusion for " + df_name + "...\n")
         # Create output path
-        nDiffOutPutPath = arguments.OutPutPath + df_name + "/nDiffusion/"
-        os.makedirs(nDiffOutPutPath, exist_ok = True)
+        nDiffOutPutPath = CreateDir(arguments.OutPutPath, f'{df_name}/nDiffusion/')
         RunnDiffusion(df, df_name, input_file_dict['PPI Network'], input_file_dict['PPI Network-GraphGene'], input_file_dict['Gold Standards'], interst_list, nDiffOutPutPath)
 
     # --- MGI Enrichment --- #
     if "MGI" in experiments:
         print('... Analyzing MGI Enrichment for ' + df_name + '... \n')
         # Create output path
-        MGIOutPutPath = arguments.OutPutPath + df_name + "/MGI Enrichment/"
-        os.makedirs(MGIOutPutPath, exist_ok = True)
+        MGIOutPutPath = CreateDir(arguments.OutPutPath, f'{df_name}/MGI Enrichment/')
         # Make function call
         MGIEnrichment(input_file_dict['MGI'], df, df_name, arguments.ExperimentName, MGIOutPutPath, interst_list, arguments.cores)
 
@@ -109,8 +107,7 @@ def RunCriteriaForSuccess(df, df_name, interst_list, num_genes, experiments, inp
     if "OR" in experiments:
         print('... Calculating Odds Ratios for ' + df_name + '... \n')
         # Create output path
-        OROutPutPath = arguments.OutPutPath + df_name + "/Odds Ratios/"
-        os.makedirs(OROutPutPath, exist_ok = True)
+        OROutPutPath = CreateDir(arguments.OutPutPath, f'{df_name}/Odds Ratios/')
         # Make function call
         GetOddsRatios(df, df_name, interst_list, input_file_dict['CaseControl'], input_file_dict['ExactTest'], arguments.ExperimentName, OROutPutPath, arguments.cores)
 
@@ -118,8 +115,7 @@ def RunCriteriaForSuccess(df, df_name, interst_list, num_genes, experiments, inp
     if "Pharmacology" in experiments:
         print('... Pulling Drug-Gene Interaction data for ' + df_name + '... \n')
         # Create output path
-        PharmaOutPutPath = arguments.OutPutPath + df_name + "/Pharmacology/"
-        os.makedirs(PharmaOutPutPath, exist_ok = True)
+        PharmaOutPutPath = CreateDir(arguments.OutPutPath, f'{df_name}/Pharmacology/')
         # Make function call
         GetGeneDrugInteractions(df, df_name, interst_list, arguments.ExperimentName, PharmaOutPutPath, arguments.cores)
 

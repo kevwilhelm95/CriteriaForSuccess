@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 #from matplotlib_venn import venn2_unweighted
 from matplotlib_venn import venn2
 import os
-
+from helper_functions import CreateDir
 
 
 # Define Class
@@ -64,8 +64,7 @@ class GoldStandardOverlap():
         # Plot venn diagram of overlap between lists
         def VennPlot(gs, exp, gs_hold, exp_hold, overlap, pval, outpath, experimental_name):
             # Make experimental list output directory
-            outpath = outpath + exp + '/'
-            os.makedirs(outpath, exist_ok = True)
+            outpath = CreateDir(outpath, f'{exp}/')
 
             # Plot figure
             fig = plt.figure(figsize=(10, 5))
