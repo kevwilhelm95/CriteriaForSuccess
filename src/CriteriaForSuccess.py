@@ -111,7 +111,7 @@ def RunCriteriaForSuccess(df, df_name, interst_list, num_genes, experiments, inp
         # Create output path
         OROutPutPath = CreateDir(arguments.OutPutPath, f'{df_name}/Odds Ratios/')
         # Make function call
-        GetOddsRatios(df, df_name, interst_list, input_file_dict['CaseControl'], arguments.CaseControl, arguments.ref, arguments.VCF arguments.ExperimentName, OROutPutPath, arguments.cores)
+        GetOddsRatios(df, df_name, interst_list, input_file_dict['CaseControl'], arguments.CaseControl, arguments.ref, arguments.VCF, arguments.ExperimentName, OROutPutPath, arguments.cores)
 
     # --- Pharmacology Analysis --- #
     if "Pharmacology" in experiments:
