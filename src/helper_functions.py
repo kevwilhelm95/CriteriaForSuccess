@@ -108,7 +108,7 @@ def CreateSampleFamFile(CaseControl_file, output_path):
                                 'disease':CaseControl_file.iloc[:,1]})
     samp_fam_df.to_csv(output_path + "CaseControl_fam.fam", sep='\t', index=False, header=False)
 
-def CreateGeneLocFile(series, ref, output_path):
+def CreateGeneRegionFile(series, ref, output_path):
     ref_df = ParseGeneLocationFile(ref)
     ref_sub_df = ref_df[ref_df.gene.isin(series)]
     ref_sub_df = ref_sub_df[['chrom', 'start', 'end']]
