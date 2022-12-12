@@ -127,6 +127,7 @@ def main(args):
 
     # Load required files based on experiments chosen
     inputFileDict = ParseInputFiles(args, ExpToRun)
+    print("Input file Dict - ", inputFileDict)
 
     # Determine which analysis to run based on declaration of InputPath or InputList
     analysis = ParseInputPaths(args)
