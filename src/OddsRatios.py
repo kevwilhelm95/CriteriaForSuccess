@@ -27,6 +27,7 @@ class GetOddsRatios():
 
         self.main()
 
+    # Run ExactTest script to get variant counts in cases and controls
     def RunExactTest(self):
         print("---Preparing intermediate files for ExactTest---")
         # Create intermediate files needed for ExactTest script
@@ -37,16 +38,17 @@ class GetOddsRatios():
         CreateGeneLocFile(self.consDf.AllUnique, self.ref, intermediate_outpath)
 
         # Run ExactTest.sh script and wait for output
-
-        # Load outputback in as self.ExactTest
-
-        return 1
         # 1 - Path to VCF - got it
         # 2 - Path to genomic location file
         # 3 - Path to sample_only_file - got it
         # 4 - Path to sample_case_file - need to define
         # 5 - path to sample_fam_file - need to define
         # 6 - Output path - use intermediate_outpath
+
+        # Load outputback in as self.ExactTest
+
+        return 1
+
 
     # Clean input files to format for program - self.totalCases, self.totalControls
     def CleanInputs(self, method):
@@ -436,7 +438,7 @@ class GetOddsRatios():
 
     def main(self):
         # Run ExactTest script
-        nothing = RunExactTest(self)
+        nothing = self.RunExactTest(self)
 
         # Set up pool for parallelizing
         pool = mp.Pool(self.Cores)
