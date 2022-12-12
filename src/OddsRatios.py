@@ -8,6 +8,7 @@ import datetime
 import matplotlib.pyplot as plt
 import multiprocessing as mp
 import math
+from pathlib import Path
 from helper_functions import *
 
 # Define odds ratio class
@@ -31,7 +32,7 @@ class GetOddsRatios():
     def RunExactTest(self):
         print("---Preparing intermediate files for ExactTest---")
         # Create intermediate files needed for ExactTest script
-        main_outpath = os.path.dirname(os.path.dirname(self.oPath))
+        main_outpath = Path(self.oPath)[0]
         intermediate_outpath = CreateDir(main_outpath, "IntermediateFiles/")
         CreateSampleOnlyFile(self.CaseControl, intermediate_outpath)
         CreateSampleFamFile(self.CaseControl, intermediate_outpath)
