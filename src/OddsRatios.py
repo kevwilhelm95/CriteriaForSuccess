@@ -35,7 +35,10 @@ class GetOddsRatios():
         intermediate_outpath = CreateDir(main_outpath, "IntermediateFiles/")
         CreateSampleOnlyFile(self.CaseControl, intermediate_outpath)
         CreateSampleFamFile(self.CaseControl, intermediate_outpath)
-        CreateGeneLocFile(self.consDf.AllUnique, self.ref, intermediate_outpath)
+        if "Genes" in self.consDf.columns:
+            CreateGeneRegionFile(self.consDf.Genes, self.ref, intermediate_outpath)
+        else: 
+            CreateGeneRegionFile(self.consDf.AllUnique, self.ref, intermediate_outpath)
 
         # Run ExactTest.sh script and wait for output
         # 1 - Path to VCF - got it
