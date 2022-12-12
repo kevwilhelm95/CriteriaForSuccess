@@ -28,6 +28,7 @@ from nDiffusion.src.run_Diffusion_Class_v2 import *
 from MGIEnrichment import *
 from OddsRatios import *
 from Pharmacology import *
+from helper_functions import CreateDir
 
 # Get starting time for time calculation
 import time
@@ -160,8 +161,7 @@ def RunCriteriaForSuccess(df, df_name, interst_list, num_genes, experiments, inp
     if "GS Overlap" in experiments:
         print("... Calculating Gold Standard Overlap for " + df_name + "...\n")
         # Create new directory for experiment
-        gsOutPutPath = arguments.OutPutPath + df_name + "/Gold Standard Overlap/"
-        os.makedirs(gsOutPutPath, exist_ok= True)
+        gsOutPutPath = CreateDir(arguments.OutPutPath, f'{df_name}/Gold Standard Overlap/')
         GoldStandardOverlap(input_file_dict['Gold Standards'], df, df_name, num_genes, interst_list, arguments.ExperimentName, gsOutPutPath)
 
     # --- nDiffusion --- #
