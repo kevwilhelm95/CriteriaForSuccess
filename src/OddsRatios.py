@@ -8,22 +8,44 @@ import datetime
 import matplotlib.pyplot as plt
 import multiprocessing as mp
 import math
-from helper_functions import CreateDir
+from helper_functions import *
 
 # Define odds ratio class
 class GetOddsRatios():
     # Define init
-    def __init__(self, df, df_name, interstList, CaseControl, exactTest_file, exp_name, outpath, cores):
+    def __init__(self, df, df_name, interstList, CaseControl, CaseControl_path, ref, VCF, exp_name, outpath, cores):
         self.consDf = df
         self.consDfName = df_name
         self.expName = exp_name
         self.oPath = outpath
         self.CaseControl = CaseControl
-        self.exactTest = exactTest_file
+        self.CaseControl_path = CaseControl_path
+        self.ref = ref
+        self.VCF_path = VCF
         self.methodList = interstList
         self.Cores = cores
 
         self.main()
+
+    def RunExactTest(self):
+        # Create intermediate files needed for ExactTest script
+        main_outpath = os.path.dirname(os.path.dirname(self.oPath))
+        intermediate_outpath = CreateDir(main_outpath, "IntermediateFiles/")
+        CreateSampleOnlyFile(self.CaseControl, intermediate_outpath)
+        CreateSampleFamFile(self.CaseControl, intermediate_outpath)
+        CreateGeneLocFile(self.consDf.AllUnique, self.ref, intermediate_outpath)
+
+        # Run ExactTest.sh script and wait for output
+
+        # Load outputback in as self.ExactTest
+
+        return 1
+        # 1 - Path to VCF - got it
+        # 2 - Path to genomic location file
+        # 3 - Path to sample_only_file - got it
+        # 4 - Path to sample_case_file - need to define
+        # 5 - path to sample_fam_file - need to define
+        # 6 - Output path - use intermediate_outpath
 
     # Clean input files to format for program - self.totalCases, self.totalControls
     def CleanInputs(self, method):
@@ -412,6 +434,9 @@ class GetOddsRatios():
 
 
     def main(self):
+        # Run ExactTest script
+        nothing = RunExactTest(self)
+
         # Set up pool for parallelizing
         pool = mp.Pool(self.Cores)
         # Define the thresholds to analyze

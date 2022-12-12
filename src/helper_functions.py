@@ -67,7 +67,7 @@ def ParseInputFiles(arguments, experiments_lst):
         fileDict['MGI'] = GetInputs(None, None, None, None).MGI()
     if any(check in ['OR'] for check in experiments_lst):
         fileDict['CaseControl'] = GetInputs(arguments.CaseControlPath, None,None, None).CaseControl()
-        fileDict['ExactTest'] = GetInputs(arguments.ExactTestPath, None, None, None).ExactTest()
+        #fileDict['ExactTest'] = GetInputs(arguments.ExactTestPath, None, None, None).ExactTest()
     return fileDict
 
 # Test which analysis to run based on declaration of InputPath or InputList
@@ -77,6 +77,15 @@ def ParseInputPaths(arguments):
     elif arguments.InputList == None:
         analysis = "BigPipeline"
     return analysis
+
+def ParseGeneLocationFile(ref):
+    ref_opts = {'GRCh37': os.path.dirname(os.getcwd()) + '/refs/ENSEMBL-lite_GRCh37.v75.txt',
+                'GRCh38': os.path.dirname(os.getcwd()) + '/refs/ENSEMBL-lite_GRCh38.v94.txt',
+                'hg19': os.path.dirname(os.getcwd()) + '/refs/refGene-lite_hg19.May2013.txt',
+                'hg38' : os.path.dirname(os.getcwd()) + '/refs/refGene-lite_hg38.June2017.txt'}
+    ref_path = ref_opts[ref]
+    ref_df = pd.read_csv(ref_path, sep='\t')
+    return ref_df
 
 # Create new directories for experiments
 def CreateDir(output_path, dir_name):
@@ -98,3 +107,9 @@ def CreateSampleFamFile(CaseControl_file, output_path):
                                 'sex':-9,
                                 'disease':CaseControl_file.iloc[:,1]})
     samp_fam_df.to_csv(output_path + "IntermediateFiles/CaseControl_fam.fam", sep='\t', index=False, header=False)
+
+def CreateGeneLocFile(series, ref, output_path):
+    ref_df = ParseGeneLocationFile(ref)
+    ref_sub_df = ref_df[ref_df.gene.isin(series)]
+    ref_sub_df = ref_sub_df[['chrom', 'start', 'end']]
+    ref_sub_df.to_csv(output_path + "AllUniqueGenesLocationFile.txt")

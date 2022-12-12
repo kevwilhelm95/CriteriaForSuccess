@@ -42,6 +42,7 @@ def parse_args():
     parser.add_argument('--ExperimentName', nargs='?', default = 'Criteria for Success', help = 'Name of disease and/or cohort')
     parser.add_argument('--InputPath', nargs='?', default = None, help = 'path to Big Pipeline Results directory')
     parser.add_argument('--InputList', nargs='?', default = None, help = 'Path to .txt file of gene list')
+    parser.add_argument('--VCF', nargs='?', help = 'Path to cohort VCF')
     parser.add_argument('--PickExperiments', nargs='?', default = 'All', help = "No-space, comma-separated list of experiments to run (i.e. GS Overlap,OR)")
     parser.add_argument('--PickNetwork', nargs = '?', choices = ('STRINGv10', 'STRINGv11', 'MeTEOR', 'toy'), help = 'Network to use for nDiffusion')
     parser.add_argument('--GSPath', nargs='?', default = './', help = 'Path to CSV of Gold Standard Lists')
@@ -49,6 +50,7 @@ def parse_args():
     parser.add_argument('--ExactTestPath', nargs='?', default = './', help = 'Path to .txt output from ExactTest.sh')
     parser.add_argument('--OutPutPath', nargs='?', default = './', help = 'Path to output directory')
     parser.add_argument('--AC_Threshold', nargs='?', type = int, default =5, help = 'Select the Allele Count Threshold to include in Consensus2')
+    parser.add_argument('--ref', choices = ('GRCh37', 'GRCh38', 'hg19', 'hg38'), help = 'Gene Location file. Choices = GRCh37, GRCh38, hg19, hg38')
     parser.add_argument('--cores', nargs='?', type = int, default = 1, help = 'Number of cores used to run the program')
 
     return parser.parse_args()
@@ -109,7 +111,7 @@ def RunCriteriaForSuccess(df, df_name, interst_list, num_genes, experiments, inp
         # Create output path
         OROutPutPath = CreateDir(arguments.OutPutPath, f'{df_name}/Odds Ratios/')
         # Make function call
-        GetOddsRatios(df, df_name, interst_list, input_file_dict['CaseControl'], input_file_dict['ExactTest'], arguments.ExperimentName, OROutPutPath, arguments.cores)
+        GetOddsRatios(df, df_name, interst_list, input_file_dict['CaseControl'], arguments.CaseControl, arguments.ref, arguments.VCF arguments.ExperimentName, OROutPutPath, arguments.cores)
 
     # --- Pharmacology Analysis --- #
     if "Pharmacology" in experiments:
