@@ -28,6 +28,7 @@ class GetOddsRatios():
         self.main()
 
     def RunExactTest(self):
+        print("---Preparing intermediate files for ExactTest---")
         # Create intermediate files needed for ExactTest script
         main_outpath = os.path.dirname(os.path.dirname(self.oPath))
         intermediate_outpath = CreateDir(main_outpath, "IntermediateFiles/")
