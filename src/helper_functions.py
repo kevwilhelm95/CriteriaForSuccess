@@ -96,7 +96,7 @@ def CreateDir(output_path, dir_name):
 # Create intermediate file containing only sample IDs for ExactTest
 def CreateSampleOnlyFile(CaseControl_file, output_path):
     samp_df = CaseControl_file.iloc[:,0]
-    samp_df.to_csv(output_path + "IntermediateFiles/CaseControl_SampleOnly.txt", sep = '\t', index=False, header=False)
+    samp_df.to_csv(output_path + "CaseControl_SampleOnly.txt", sep = '\t', index=False, header=False)
 
 # Create intermediate .fam file for ExactTest
 def CreateSampleFamFile(CaseControl_file, output_path):
@@ -106,7 +106,7 @@ def CreateSampleFamFile(CaseControl_file, output_path):
                                 'motherid':0,
                                 'sex':-9,
                                 'disease':CaseControl_file.iloc[:,1]})
-    samp_fam_df.to_csv(output_path + "IntermediateFiles/CaseControl_fam.fam", sep='\t', index=False, header=False)
+    samp_fam_df.to_csv(output_path + "CaseControl_fam.fam", sep='\t', index=False, header=False)
 
 def CreateGeneLocFile(series, ref, output_path):
     ref_df = ParseGeneLocationFile(ref)
