@@ -3,6 +3,7 @@ from scipy.stats import hypergeom, fisher_exact
 import numpy as np
 import os
 from statsmodels.stats.multitest import fdrcorrection as fdr
+from helper_functions import CreateDir
 
 class MGIEnrichment():
     def __init__(self, mgi, df, df_name, experiment_name, output_path, interst_list, cores):
@@ -119,8 +120,7 @@ class MGIEnrichment():
         # Loop through each method gene list and calculate the enrichment for a phenotype in MGI
         for gL in self.interstList:
             # Create new output location for each method's enrichment
-            newMGI_outpath = self.oPath + gL + '/'
-            os.makedirs(newMGI_outpath, exist_ok=True)
+            newMGI_outpath = CreateDir(self.oPath, f'{gL}/')
             
             # Define output df
             out_df = pd.DataFrame(columns=['Phenotype', 'Phenotype Name', 'Total Genes', 'MGI genes with Phenotype',
