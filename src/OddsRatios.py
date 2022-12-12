@@ -438,7 +438,7 @@ class GetOddsRatios():
 
     def main(self):
         # Run ExactTest script
-        nothing = self.RunExactTest(self)
+        nothing = self.RunExactTest()
 
         # Set up pool for parallelizing
         pool = mp.Pool(self.Cores)
