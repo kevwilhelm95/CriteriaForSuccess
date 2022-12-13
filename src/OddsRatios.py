@@ -35,7 +35,6 @@ class GetOddsRatios():
         # Create intermediate files needed for ExactTest script
         main_outpath = os.path.abspath(os.path.join(self.oPath, "../.."))
         intermediate_outpath = CreateDir(main_outpath, "IntermediateFiles")
-        print(intermediate_outpath)
         CreateSampleOnlyFile(self.CaseControl, intermediate_outpath)
         CreateSampleFamFile(self.CaseControl, intermediate_outpath)
         if "Genes" in self.consDf.columns:
@@ -54,6 +53,9 @@ class GetOddsRatios():
                 intermediate_outpath]
         #proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell = False)
         print("---ExactTest Script Started---")
+        output = os.popen(" ".join(cmd))
+        print(output.read())
+         #proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell = False)
         #p = subprocess.Popen(cmd, shell = True, stdout=subprocess.PIPE, stderr = subprocess.PIPE)
         #proc = subprocess.Popen(cmd, shell = True)
         #print(proc)
