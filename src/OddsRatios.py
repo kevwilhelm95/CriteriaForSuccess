@@ -42,6 +42,7 @@ class GetOddsRatios():
         else: 
             CreateGeneRegionFile(self.consDf.AllUnique, self.ref, intermediate_outpath)
 
+        exactTest_sh = f"{os.getcwd()}/ExactTest.sh"
         # Run ExactTest.sh script and wait for output
         cmd = ['ExactTest.sh', 
                 self.VCF_path, 
