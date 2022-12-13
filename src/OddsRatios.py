@@ -52,14 +52,24 @@ class GetOddsRatios():
                 f"{intermediate_outpath}/CaseControl_SampleOnly.txt",
                 f"{intermediate_outpath}/CaseControl_fam.fam",
                 intermediate_outpath]
-        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell = False)
+        #proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell = False)
+        print("---ExactTest Script Started---")
+        subprocess.Popen(cmd).wait()
 
-        stdout, stderr = proc.communicate()
-        print(stdout)
-        print(stderr)
+        #stdout, stderr = proc.communicate()
+        #print(stdout)
+        #print(stderr)
 
-        # Load outputback in as self.ExactTest
-        self.ExactTest = pd.read_csv(f"{intermediate_outpath}/CaseControl.Variants.OR.txt")
+        # Load outputback in as self.exactTest
+        print("---ExactTest Script Finished ---")
+        self.exactTest = pd.read_csv(f"{intermediate_outpath}/CaseControl.Variants.OR.txt",
+                                    sep='\t', header=None,
+                                     names=['chrom', 'pos', 'ref', 'alt', 'gene', 'ENSP', 'Consequence','HGVSp', 'EA', 'AN_0', 'AN_1', 'Cases', 'Controls', 'AC_1', 'AC_Het_1', 'AC_Hom_1', 'AC_0', 'AC_Het_0', 'AC_Hom_0', 'CC_ALL', 'CC_DOM', 'CC_REC', 'AF', 'AC'], low_memory=False)
+         # Clean the file now
+        self.exactTest = self.exactTest[self.exactTest.Consequence.str.contains("frameshift_variant|missense_variant|stop_gained|stop_lost", case = False)].reset_index() # Need to include splice sites
+        self.exactTest['EA-Clean'] = [x.split(',')[0] for x in self.exactTest['EA']]
+        self.exactTest['EA-Clean'] = [-1 if x == '.' else x for x in self.exactTest['EA-Clean']]
+        self.exactTest['EA-Clean'] = self.exactTest['EA-Clean'].astype(float)
 
 
     # Clean input files to format for program - self.totalCases, self.totalControls
