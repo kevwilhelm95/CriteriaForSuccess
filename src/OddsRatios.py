@@ -50,10 +50,9 @@ class GetOddsRatios():
                 self.CaseControl_path,
                 f"{intermediate_outpath}/CaseControl_SampleOnly.txt",
                 f"{intermediate_outpath}/CaseControl_fam.fam",
-                intermediate_outpath, stdout = subprocess.PIPE]
+                intermediate_outpath]
         process = subprocess.Popen(cmd)
-        for line in process.stdout:
-            print(line)
+        process.check_output()
 
         # Load outputback in as self.ExactTest
         self.ExactTest = pd.read_csv(f"{intermediate_outpath}/CaseControl.Variants.OR.txt")
