@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import multiprocessing as mp
 import math
 from pathlib import Path
+import subprocess
 from helper_functions import *
 
 # Define odds ratio class
@@ -42,16 +43,17 @@ class GetOddsRatios():
             CreateGeneRegionFile(self.consDf.AllUnique, self.ref, intermediate_outpath)
 
         # Run ExactTest.sh script and wait for output
-        # 1 - Path to VCF - got it
-        # 2 - Path to genomic location file
-        # 3 - Path to sample_only_file - got it
-        # 4 - Path to sample_case_file - need to define
-        # 5 - path to sample_fam_file - need to define
-        # 6 - Output path - use intermediate_outpath
+        cmd = ['ExactTest.sh', 
+                self.VCF, 
+                f"{intermediate_outpath}/AllUniqueGenesLocationFile.txt",
+                self.CaseControl_path,
+                f"{intermediate_outpath}/CaseControl_SampleOnly.txt",
+                f"{intermediate_outpath}/CaseControl_fam.fam",
+                intermediate_outpath]
+        subprocess.Popen(cmd).wait()
 
         # Load outputback in as self.ExactTest
-
-        return 1
+        self.ExactTest = pd.read_csv(f"{intermediate_outpath}/CaseControl.Variants.OR.txt")
 
 
     # Clean input files to format for program - self.totalCases, self.totalControls
