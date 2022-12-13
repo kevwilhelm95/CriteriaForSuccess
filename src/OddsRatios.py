@@ -54,7 +54,8 @@ class GetOddsRatios():
         #proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell = False)
         print("---ExactTest Script Started---")
         output = os.popen(" ".join(cmd))
-        print(output.read())
+        print("output read - ", output.read())
+        print("output close - ", output.close())
          #proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell = False)
         #p = subprocess.Popen(cmd, shell = True, stdout=subprocess.PIPE, stderr = subprocess.PIPE)
         #proc = subprocess.Popen(cmd, shell = True)
@@ -71,6 +72,7 @@ class GetOddsRatios():
                                     sep='\t', header=None,
                                      names=['chrom', 'pos', 'ref', 'alt', 'gene', 'ENSP', 'Consequence','HGVSp', 'EA', 'AN_0', 'AN_1', 'Cases', 'Controls', 'AC_1', 'AC_Het_1', 'AC_Hom_1', 'AC_0', 'AC_Het_0', 'AC_Hom_0', 'CC_ALL', 'CC_DOM', 'CC_REC', 'AF', 'AC'], low_memory=False)
          # Clean the file now
+        print(self.exac)
         self.exactTest = self.exactTest[self.exactTest.Consequence.str.contains("frameshift_variant|missense_variant|stop_gained|stop_lost", case = False)].reset_index() # Need to include splice sites
         self.exactTest['EA-Clean'] = [x.split(',')[0] for x in self.exactTest['EA']]
         self.exactTest['EA-Clean'] = [-1 if x == '.' else x for x in self.exactTest['EA-Clean']]
