@@ -48,8 +48,8 @@ class GetOddsRatios():
         cmd = [exactTest_sh, 
                 self.VCF_path, 
                 f"{intermediate_outpath}/AllUniqueGenesLocationFile.txt",
-                f"{intermediate_outpath}/CaseControl_SampleCase.txt",
                 f"{intermediate_outpath}/CaseControl_SampleOnly.txt",
+                f"{intermediate_outpath}/CaseControl_SampleCase.txt",
                 f"{intermediate_outpath}/CaseControl_fam.fam",
                 intermediate_outpath]
         #proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell = False)
