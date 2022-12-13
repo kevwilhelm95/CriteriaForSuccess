@@ -112,4 +112,4 @@ def CreateGeneRegionFile(series, ref, output_path):
     ref_df = ParseGeneLocationFile(ref)
     ref_sub_df = ref_df[ref_df.gene.isin(series)]
     ref_sub_df = ref_sub_df[['chrom', 'start', 'end']]
-    ref_sub_df.to_csv(output_path + "AllUniqueGenesLocationFile.txt")
+    ref_sub_df.to_csv(output_path + "AllUniqueGenesLocationFile.txt", sep = '\t', index = False, header = False)
