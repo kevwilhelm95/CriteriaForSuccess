@@ -54,7 +54,12 @@ class GetOddsRatios():
                 intermediate_outpath]
         #proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell = False)
         print("---ExactTest Script Started---")
-        subprocess.Popen(cmd, shell = False, check = True)
+        p = subprocess.Popen(cmd, shell = True, stdout=subprocess.PIPE, stderr = subprocess.PIPE)
+        p.wait()
+
+        for line in p.stdout.readlines():
+            print(line)
+        #subprocess.Popen(cmd, shell = False, check = True)
 
         #stdout, stderr = proc.communicate()
         #print(stdout)
