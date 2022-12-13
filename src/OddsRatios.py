@@ -56,7 +56,7 @@ class GetOddsRatios():
         print("---ExactTest Script Started---")
         output = os.popen(" ".join(cmd))
         print(output.read())
-        if output.close() != 0:
+        if output.close() != None:
             print("Error Code - ", output.close())
          #proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell = False)
         #p = subprocess.Popen(cmd, shell = True, stdout=subprocess.PIPE, stderr = subprocess.PIPE)
