@@ -52,7 +52,7 @@ class GetOddsRatios():
                 f"{intermediate_outpath}/CaseControl_fam.fam",
                 intermediate_outpath]
         process = subprocess.Popen(cmd)
-        process.check_output()
+        process.communicate()
 
         # Load outputback in as self.ExactTest
         self.ExactTest = pd.read_csv(f"{intermediate_outpath}/CaseControl.Variants.OR.txt")
