@@ -36,6 +36,7 @@ class GetOddsRatios():
         main_outpath = os.path.abspath(os.path.join(self.oPath, "../.."))
         intermediate_outpath = CreateDir(main_outpath, "IntermediateFiles")
         CreateSampleOnlyFile(self.CaseControl, intermediate_outpath)
+        CreateSampleCaseTabFile(self.CaseControl, intermediate_outpath)
         CreateSampleFamFile(self.CaseControl, intermediate_outpath)
         if "Genes" in self.consDf.columns:
             CreateGeneRegionFile(self.consDf.Genes, self.ref, intermediate_outpath)
@@ -46,8 +47,8 @@ class GetOddsRatios():
         # Run ExactTest.sh script and wait for output
         cmd = [exactTest_sh, 
                 self.VCF_path, 
-                intermediate_outpath + "AllUniqueGenesLocationFile.txt",
-                self.CaseControl_path,
+                f"{intermediate_outpath}/AllUniqueGenesLocationFile.txt",
+                f"{intermediate_outpath}/CaseControl_SampleCase.txt",
                 f"{intermediate_outpath}/CaseControl_SampleOnly.txt",
                 f"{intermediate_outpath}/CaseControl_fam.fam",
                 intermediate_outpath]
