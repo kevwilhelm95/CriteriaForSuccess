@@ -44,7 +44,7 @@ class GetOddsRatios():
 
         exactTest_sh = f"{os.getcwd()}/ExactTest.sh"
         # Run ExactTest.sh script and wait for output
-        cmd = ['ExactTest.sh', 
+        cmd = [exactTest_sh, 
                 self.VCF_path, 
                 f"{intermediate_outpath}/AllUniqueGenesLocationFile.txt",
                 self.CaseControl_path,
