@@ -51,7 +51,7 @@ class GetOddsRatios():
                 f"{intermediate_outpath}/CaseControl_SampleOnly.txt",
                 f"{intermediate_outpath}/CaseControl_fam.fam",
                 intermediate_outpath]
-        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = subprocess.call(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         process.wait()
 
         # Load outputback in as self.ExactTest
