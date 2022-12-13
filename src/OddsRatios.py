@@ -43,8 +43,8 @@ class GetOddsRatios():
         else: 
             CreateGeneRegionFile(self.consDf.AllUnique, self.ref, intermediate_outpath)
 
-        exactTest_sh = f"{os.getcwd()}/ExactTest.sh"
         # Run ExactTest.sh script and wait for output
+        exactTest_sh = f"{os.getcwd()}/ExactTest.sh"
         cmd = [exactTest_sh, 
                 self.VCF_path, 
                 f"{intermediate_outpath}/AllUniqueGenesLocationFile.txt",
@@ -52,21 +52,13 @@ class GetOddsRatios():
                 f"{intermediate_outpath}/CaseControl_SampleCase.txt",
                 f"{intermediate_outpath}/CaseControl_fam.fam",
                 intermediate_outpath]
-        #proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell = False)
+
+        # Make call to .sh script
         print("---ExactTest Script Started---")
         output = os.popen(" ".join(cmd))
         print(output.read())
         if output.close() != None:
             print("Error Code - ", output.close())
-         #proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell = False)
-        #p = subprocess.Popen(cmd, shell = True, stdout=subprocess.PIPE, stderr = subprocess.PIPE)
-        #proc = subprocess.Popen(cmd, shell = True)
-        #print(proc)
-        #subprocess.Popen(cmd, shell = False, check = True)
-
-        #stdout, stderr = proc.communicate()
-        #print(stdout)
-        #print(stderr)
 
         # Load outputback in as self.exactTest
         print("---ExactTest Script Finished ---")
