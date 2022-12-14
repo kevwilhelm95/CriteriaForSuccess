@@ -53,8 +53,7 @@ class PubMed_Enrichment():
             # Using map, you do not need list iteration
             results = executor.map(self.search, query, repeat(disease_query), repeat(self.email), repeat(self.api_key))
 
-            #for result in results:
-            for result in concurrent.futures.as_completed(results):
+            for result in results:
                 try: gene = result['TranslationStack'][0]['Term'].split('"')[1]
                 except:
                     gene = result['QueryTranslation'].split('"')[1]
