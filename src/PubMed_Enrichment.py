@@ -73,7 +73,7 @@ class PubMed_Enrichment():
         print('Pulling Publications for {} random gene sets of {} genes'.format(trials, len(query)))
         for i in range(trials):
             if i % 10 == 0:
-                print(" Random Trial : ", i)
+                print(" Random Trial : ", i, flush = True)
             randgenes = np.random.choice(background_genes, len(query), replace = False)
             tempdf = pd.DataFrame(columns = ['Gene and paper', 'Gene and disease'])
 
