@@ -112,7 +112,7 @@ class PubMed_Enrichment():
             plt.ylabel('Count', fontsize=15)
             plt.show()
             plt.close()
-            plt.savefig(outpath + f"{disease_query}->{paper_thrshld+1}Co-Mentions_Plot.png")
+            plt.savefig(outpath + f"{disease_query}_>{paper_thrshld+1}Co-Mentions_Plot.png")
         
     def main(self):
         # Load background genes
