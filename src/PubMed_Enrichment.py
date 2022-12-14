@@ -53,7 +53,8 @@ class PubMed_Enrichment():
             # Using map, you do not need list iteration
             results = executor.map(self.search, query, repeat(disease_query), repeat(self.email), repeat(self.api_key))
 
-            for result in results:
+            #for result in results:
+            for result in concurrent.futures.as_completed(results):
                 try: gene = result['TranslationStack'][0]['Term'].split('"')[1]
                 except:
                     gene = result['QueryTranslation'].split('"')[1]
@@ -123,7 +124,7 @@ class PubMed_Enrichment():
             gL_hold = self.df[gL].dropna()
             # Loop through keyword queries
             for keyword in self.key_word_list:
-                print(f"--- Querying {gL} genes for co-mentions with {keyword}")
+                print(f"--- Querying {gL} genes for co-mentions with {keyword}---")
                 # Create directory
                 hold_OutPutPath = CreateDir(self.output_path, f"{gL}/{keyword}")
                 self.GetEnrichment(gL_hold, keyword, background_genes, max_workers = 13, outpath = hold_OutPutPath)
