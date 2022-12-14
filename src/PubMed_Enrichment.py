@@ -22,7 +22,9 @@ class PubMed_Enrichment():
         self.main()
 
     def LoadBackgroundGenes(self):
-        self.background_genes = pd.read_csv(self.background_path, sep ='\t', )
+        self.background_genes_df = pd.read_csv(self.background_path, sep ='\t', header = None)
+        self.background_genes = self.background_genes_df.iloc[:, 0]
+        return self
 
     # API Call to PubMed
     def search(self, gene, disease, email, api_key):
