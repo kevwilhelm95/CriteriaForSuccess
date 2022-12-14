@@ -32,6 +32,7 @@ from PubMed_Enrichment import *
 from helper_functions import *
 
 # Get starting time for time calculation
+print('--- STARTING PYCFS---')
 import time
 startTime = time.time()
 
