@@ -118,7 +118,7 @@ class PubMed_Enrichment():
 
         # Loop through gene lists
         for gL in self.interest_list:
-            gL_hold = gL.dropna()
+            gL_hold = self.df[gL].dropna()
             # Loop through keyword queries
             for keyword in self.key_word_list:
                 # Create directory
