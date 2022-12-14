@@ -25,7 +25,7 @@ class PubMed_Enrichment():
         self.background_genes = pd.read_csv(self.background_path, sep ='\t', )
 
     # API Call to PubMed
-    def search(gene, disease, email, api_key):
+    def search(self, gene, disease, email, api_key):
         Entrez.email = email
         Entrez.api_key = api_key
         new_query = f'"{gene}" AND ("{disease}") AND ("gene" or "protein")'
