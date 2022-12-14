@@ -36,8 +36,8 @@ import time
 startTime = time.time()
 
 # Unbuffer pooling commands
-unbuffered = os.fdopen(sys.stdout.fileno(), 'w', 0)
-sys.stdout = unbuffered
+#unbuffered = os.fdopen(sys.stdout.fileno(), 'w', 0)
+#sys.stdout = unbuffered
 
 def parse_args():
     '''
