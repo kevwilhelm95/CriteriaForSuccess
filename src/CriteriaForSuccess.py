@@ -28,6 +28,7 @@ from nDiffusion.src.run_Diffusion_Class_v2 import *
 from MGIEnrichment import *
 from OddsRatios import *
 from Pharmacology import *
+from PubMed_Enrichment import *
 from helper_functions import *
 
 # Get starting time for time calculation
@@ -45,9 +46,9 @@ def parse_args():
     parser.add_argument('--VCF', nargs='?', help = 'Path to cohort VCF')
     parser.add_argument('--PickExperiments', nargs='?', default = 'All', help = "No-space, comma-separated list of experiments to run (i.e. GS Overlap,OR)")
     parser.add_argument('--PickNetwork', nargs = '?', choices = ('STRINGv10', 'STRINGv11', 'MeTEOR', 'toy'), help = 'Network to use for nDiffusion')
+    parser.add_argument('--PubMedKeywords', nargs = '?', help = 'comma-separated list of key words to query co-mentions for (e.g. "Type 2 Diabetes,Insulin,Obesity")')
     parser.add_argument('--GSPath', nargs='?', default = './', help = 'Path to CSV of Gold Standard Lists')
     parser.add_argument('--CaseControlPath', nargs='?', default = './', help = 'Path to CSV with Sample IDs and 1/0 (Case/Control) - No header')
-    parser.add_argument('--ExactTestPath', nargs='?', default = './', help = 'Path to .txt output from ExactTest.sh')
     parser.add_argument('--OutPutPath', nargs='?', default = './', help = 'Path to output directory')
     parser.add_argument('--AC_Threshold', nargs='?', type = int, default =5, help = 'Select the Allele Count Threshold to include in Consensus2')
     parser.add_argument('--ref', choices = ('GRCh37', 'GRCh38', 'hg19', 'hg38'), help = 'Gene Location file. Choices = GRCh37, GRCh38, hg19, hg38')
@@ -112,6 +113,13 @@ def RunCriteriaForSuccess(df, df_name, interst_list, num_genes, experiments, inp
         OROutPutPath = CreateDir(arguments.OutPutPath, f'{df_name}/Odds Ratios/')
         # Make function call
         GetOddsRatios(df, df_name, interst_list, input_file_dict['CaseControl'], arguments.CaseControlPath, arguments.ref, arguments.VCF, arguments.ExperimentName, OROutPutPath, arguments.cores)
+
+    if "PubMed Enrichment" in experiments:
+        print(f'... Querying PubMed for Keywords Co-mentioned with {df_name} genes...')
+        # Create output path
+        pubmedOutPutPath = CreateDir(arguments.OutPutPath, f'{df_name}/PubMed Enrichment/')
+        PubMed_Enrichment(df, df_name, interst_list, arguments.PubMedKeywords, pubmedOutPutPath)
+
 
     # --- Pharmacology Analysis --- #
     if "Pharmacology" in experiments:

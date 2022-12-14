@@ -460,19 +460,3 @@ class GetInputs():
         self.caseControl = pd.read_csv(self.path, sep=',', header=None)
         return self.caseControl
 
-    def ExactTest(self):
-        '''
-        Required Inputs:
-        Self with self.path defined as path to .txt of ExactTest.sh output
-        '''
-        self.exactTest = pd.read_csv(self.path, sep='\t', header=None,
-                                     names=['chrom', 'pos', 'ref', 'alt', 'gene', 'ENSP', 'Consequence',
-                                            'HGVSp', 'EA', 'AN_0', 'AN_1', 'Cases', 'Controls', 'AC_1', 'AC_Het_1', 'AC_Hom_1', 'AC_0', 'AC_Het_0', 'AC_Hom_0', 'CC_ALL', 'CC_DOM', 'CC_REC', 'AF', 'AC'], low_memory=False)
-        # Clean the file now
-        self.exactTest = self.exactTest[self.exactTest.Consequence.str.contains("frameshift_variant|missense_variant|stop_gained|stop_lost", case = False)].reset_index() # Need to include splice sites
-        self.exactTest['EA-Clean'] = [x.split(',')[0] for x in self.exactTest['EA']]
-        self.exactTest['EA-Clean'] = [-1 if x == '.' else x for x in self.exactTest['EA-Clean']]
-        self.exactTest['EA-Clean'] = self.exactTest['EA-Clean'].astype(float)
-        
-        return self.exactTest
-
