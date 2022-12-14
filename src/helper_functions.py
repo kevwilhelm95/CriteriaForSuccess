@@ -67,7 +67,6 @@ def ParseInputFiles(arguments, experiments_lst):
         fileDict['MGI'] = GetInputs(None, None, None, None).MGI()
     if any(check in ['OR'] for check in experiments_lst):
         fileDict['CaseControl'] = GetInputs(arguments.CaseControlPath, None,None, None).CaseControl()
-        #fileDict['ExactTest'] = GetInputs(arguments.ExactTestPath, None, None, None).ExactTest()
     return fileDict
 
 # Test which analysis to run based on declaration of InputPath or InputList
