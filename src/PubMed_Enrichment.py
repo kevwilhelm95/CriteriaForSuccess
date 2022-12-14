@@ -6,25 +6,25 @@ import os
 import time
 import concurrent.futures
 from itertools import repeat
-from helper_functions import CreateDir
+from helper_functions import CreateDir, ParseGeneLocationFile
 
 # Define Class
 class PubMed_Enrichment():
-    def __init__(self, df, df_name, interest_list, keywords, output_path):
+    def __init__(self, df, df_name, interest_list, ref, keywords, output_path):
         self.email = "kwilhelm95@gmail.com"
         self.api_key = '3a82b96dc21a79d573de046812f2e1187508'
         self.df = df
         self.df_name = df_name
         self.interest_list = interest_list
         self.key_word_list = keywords.split(",")
-        self.background_path = f"{os.path.abspath(os.path.join(os.getcwd(), '../'))}/refs/background_genes_n=19819.csv"
+        self.ref = ref
         self.output_path = output_path
         self.main()
 
     def LoadBackgroundGenes(self):
-        self.background_genes_df = pd.read_csv(self.background_path, sep ='\t', header = None)
-        self.background_genes = self.background_genes_df.iloc[:, 0]
-        return self
+        ref_df = ParseGeneLocationFile(self.ref)
+        background_genes = ref_df.gene
+        return background_genes
 
     # API Call to PubMed
     def search(self, gene, disease, email, api_key):
@@ -40,7 +40,7 @@ class PubMed_Enrichment():
         results = Entrez.read(handle)
         return results
 
-    def GetEnrichment(self, query, disease_query, max_workers, outpath):
+    def GetEnrichment(self, query, disease_query, background_genes, max_workers, outpath):
         ## Perform PubMed query on our query genes
         print('Pulling Publications for Query Genes')
         # Create hold df
@@ -74,7 +74,7 @@ class PubMed_Enrichment():
         for i in range(trials):
             if i % 10 == 0:
                 print(" Random Trial : ", i)
-            randgenes = np.random.choice(self.background_genes, len(query), replace = False)
+            randgenes = np.random.choice(background_genes, len(query), replace = False)
             tempdf = pd.DataFrame(columns = ['Gene and paper', 'Gene and disease'])
 
             with concurrent.futures.ThreadPoolExecutor(max_workers = max_workers) as executor:
@@ -116,7 +116,7 @@ class PubMed_Enrichment():
         
     def main(self):
         # Load background genes
-        self.LoadBackgroundGenes
+        background_genes = self.LoadBackgroundGenes
 
         # Loop through gene lists
         for gL in self.interest_list:
@@ -125,4 +125,4 @@ class PubMed_Enrichment():
             for keyword in self.key_word_list:
                 # Create directory
                 hold_OutPutPath = CreateDir(self.output_path, f"{gL}/{keyword}")
-                self.GetEnrichment(gL_hold, keyword, max_workers = 16, outpath = hold_OutPutPath)
+                self.GetEnrichment(gL_hold, keyword, background_genes, max_workers = 16, outpath = hold_OutPutPath)
