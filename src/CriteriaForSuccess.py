@@ -118,7 +118,7 @@ def RunCriteriaForSuccess(df, df_name, interst_list, num_genes, experiments, inp
         print(f'... Querying PubMed for Keywords Co-mentioned with {df_name} genes...')
         # Create output path
         pubmedOutPutPath = CreateDir(arguments.OutPutPath, f'{df_name}/PubMed Enrichment/')
-        PubMed_Enrichment(df, df_name, interst_list, arguments.PubMedKeywords, pubmedOutPutPath)
+        PubMed_Enrichment(df, df_name, interst_list, arguments.ref, arguments.PubMedKeywords, pubmedOutPutPath)
 
 
     # --- Pharmacology Analysis --- #
