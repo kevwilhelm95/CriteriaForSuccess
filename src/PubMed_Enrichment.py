@@ -68,12 +68,12 @@ class PubMed_Enrichment():
         out_df.sort_values(by = 'Count', ascending = False).to_csv(outpath + "PMIDresults_Title-Abstract_query+" + disease_query + ".csv")
 
         # Perform pubmed query on random genes
-        trials = 100
+        trials = 10
         randfs = []
         print('Pulling Publications for {} random gene sets of {} genes'.format(trials, len(query)))
         for i in range(trials):
             if i % 10 == 0:
-                print(" Random Trial : ", i, flush = True)
+                print(" Random Trial : ", i, flush = True) # Add flush to unbuffer
             randgenes = np.random.choice(background_genes, len(query), replace = False)
             tempdf = pd.DataFrame(columns = ['Gene and paper', 'Gene and disease'])
 
