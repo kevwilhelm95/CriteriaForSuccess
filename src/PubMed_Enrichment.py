@@ -116,7 +116,7 @@ class PubMed_Enrichment():
         
     def main(self):
         # Load background genes
-        background_genes = self.LoadBackgroundGenes
+        background_genes = self.LoadBackgroundGenes()
 
         # Loop through gene lists
         for gL in self.interest_list:
