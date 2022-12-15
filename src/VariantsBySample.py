@@ -26,8 +26,8 @@ class VariantsBySample():
 
     # Split samples by cases and controls
     def parse_samples(self, samples):
-        cases = samples[samples.iloc[:,0] == 1].index.astype(str).tolist()
-        conts = samples[samples.iloc[:,0] == 0].index.astype(str).tolist()
+        cases = samples[samples.iloc[:,1] == 1][0].astype(str).tolist()
+        conts = samples[samples.iloc[:,1] == 0][0].astype(str).tolist()
         return cases,conts
 
     # Convert a genotype tuple to a zygosity integer
