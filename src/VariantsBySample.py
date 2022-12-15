@@ -14,6 +14,7 @@ class VariantsBySample():
         self.CaseControl = CaseControl
         self.cores = cores
         self.outpath = outpath
+
         self.main()
 
     def GetGenes(self):
@@ -124,6 +125,8 @@ class VariantsBySample():
 
     def Parse_Variants(self, args_vcf, args_samples, genes, args_cores):
         cases, conts = self.parse_samples(args_samples)
+        print(cases)
+        print(conts)
         conts_dfs = Parallel(n_jobs=int(args_cores))(delayed(self.parse_VEP)(args_vcf, genes, sample, min_af=None, max_af=None, af_field='AF', EA_parser='canonical') for sample in tqdm(conts))
         conts_var = pd.concat(conts_dfs, axis=0)
         conts_var.reset_index(drop = True, inplace = True)
