@@ -60,7 +60,7 @@ def ParseInputFiles(arguments, experiments_lst):
     """
     fileDict = {}
 
-    if any(check in ['GS Overlap', 'nDiffusion', 'InterMethod_Connectivity'] for check in experiments_lst):
+    if any(check in ['GS Overlap', 'nDiffusion', 'InterMethod Connectivity'] for check in experiments_lst):
         fileDict['Gold Standards'] = GetInputs(arguments.GSPath, None, None, None).GoldStandards()
     if any(check in ['nDiffusion'] for check in experiments_lst):
         fileDict['PPI Network'], fileDict['PPI Network-GraphGene'] = ParseNetwork(arguments.PickNetwork)
