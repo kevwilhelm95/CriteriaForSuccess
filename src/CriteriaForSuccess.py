@@ -30,6 +30,7 @@ from OddsRatios import *
 from Pharmacology import *
 from PubMed_Enrichment import *
 from helper_functions import *
+from VariantsBySample import *
 
 # Get starting time for time calculation
 print('--- STARTING PYCFS---', flush = True)
@@ -119,12 +120,25 @@ def RunCriteriaForSuccess(df, df_name, interst_list, num_genes, experiments, inp
         # Make function call
         GetOddsRatios(df, df_name, interst_list, input_file_dict['CaseControl'], arguments.CaseControlPath, arguments.ref, arguments.VCF, arguments.ExperimentName, OROutPutPath, arguments.cores)
 
+    # --- PubMed Enrichment --- #
     if "PubMed Enrichment" in experiments:
         print(f'... Querying PubMed for Keywords Co-mentioned with {df_name} genes...')
         # Create output path
         pubmedOutPutPath = CreateDir(arguments.OutPutPath, f'{df_name}/PubMed Enrichment/')
         PubMed_Enrichment(df, df_name, interst_list, arguments.ref, arguments.PubMedKeywords, pubmedOutPutPath)
 
+    # --- Variants By Sample --- #
+    if "Variants By Sample" in experiments:
+        print(f'... Parsing VCF to Get Variants By Sample ...')
+        # Create output path
+        variantsOutPutPath = CreateDir(arguments.OutPutPath, f'IntermediateFiles')
+        # Call
+        VariantsBySample(df, df_name, arguments.VCF, input_file_dict['CaseControl'], arguments.cores, variantsOutPutPath)
+
+    # --- Phenotype Associations --- #
+    if "HOLD_PHENOTYPE_ASSOCIATION" in experiments:
+        if ("Variants By Sample" not in experiments) & (arguments.HOLD_VBS_FILE != None):
+            x = "Run"
 
     # --- Pharmacology Analysis --- #
     if "Pharmacology" in experiments:
