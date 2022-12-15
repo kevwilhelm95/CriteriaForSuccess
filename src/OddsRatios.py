@@ -54,14 +54,14 @@ class GetOddsRatios():
                 intermediate_outpath]
 
         # Make call to .sh script
-        print("---ExactTest Script Started---")
+        print("---ExactTest Script Started---", flush = True)
         output = os.popen(" ".join(cmd))
         print(output.read())
         if output.close() != None:
-            print("Error Code - ", output.close())
+            print("Error Code - ", output.close(), flush = True)
 
         # Load outputback in as self.exactTest
-        print("---ExactTest Script Finished ---")
+        print("---ExactTest Script Finished ---", flush = True)
         self.exactTest = pd.read_csv(f"{intermediate_outpath}/CaseControl.Variants.OR.txt",
                                     sep='\t', header=None,
                                      names=['chrom', 'pos', 'ref', 'alt', 'gene', 'ENSP', 'Consequence','HGVSp', 'EA', 'AN_0', 'AN_1', 'Cases', 'Controls', 'AC_1', 'AC_Het_1', 'AC_Hom_1', 'AC_0', 'AC_Het_0', 'AC_Hom_0', 'CC_ALL', 'CC_DOM', 'CC_REC', 'AF', 'AC'], low_memory=False)
