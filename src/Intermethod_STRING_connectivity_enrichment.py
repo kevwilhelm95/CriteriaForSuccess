@@ -271,7 +271,7 @@ def main(self):
             ref_genes = self.GS[gS].dropna()
 
             # Create output path 
-            newOutPutPath = CreateDir(self.outpath, f"{gL}/{gS}/")
+            newOutPutPath = CreateDir(self.outpath, f"{gL}/{gS}_Evidences-{','.join(evidence_lst)}_Confidence-{self.confidence}/")
 
             geneSets = {gL:list(query), gS:list(ref_genes)}
             geneSources = getGeneSources(geneSets, newOutPutPath, 'trueSets')
