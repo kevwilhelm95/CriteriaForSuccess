@@ -32,6 +32,7 @@ from Pharmacology import *
 from PubMed_Enrichment import *
 from helper_functions import *
 from VariantsBySample import *
+from Intermethod_STRING_connectivity_enrichment import *
 
 # Get starting time for time calculation
 print('--- STARTING PYCFS---', flush = True)
@@ -54,6 +55,8 @@ def parse_args():
     parser.add_argument('--PickExperiments', nargs='?', default = 'All', help = "No-space, comma-separated list of experiments to run (i.e. GS Overlap,OR)")
     parser.add_argument('--PickNetwork', nargs = '?', choices = ('STRINGv10', 'STRINGv11', 'MeTEOR', 'toy'), help = 'Network to use for nDiffusion')
     parser.add_argument('--PubMedKeywords', nargs = '?', help = 'comma-separated list of key words to query co-mentions for (e.g. "Type 2 Diabetes,Insulin,Obesity")')
+    parser.add_argument('--InterConnectivity_Evidences', nargs = '?', help = 'comma-separated list of evidences to score network (e.g. "fusion,coexpression,database")')
+    parser.add_argument('--InterConnectivity_Confidence', nargs = '?', choices=('all', 'medium', 'high', 'highest'), help = 'edge combined score confidence level')
     parser.add_argument('--GSPath', nargs='?', default = './', help = 'Path to CSV of Gold Standard Lists')
     parser.add_argument('--CaseControlPath', nargs='?', default = './', help = 'Path to CSV with Sample IDs and 1/0 (Case/Control) - No header')
     parser.add_argument('--OutPutPath', nargs='?', default = './', help = 'Path to output directory')
@@ -135,6 +138,14 @@ def RunCriteriaForSuccess(df, df_name, interst_list, num_genes, experiments, inp
         variantsOutPutPath = CreateDir(arguments.OutPutPath, f'IntermediateFiles')
         # Call
         VariantsBySample(df, df_name, arguments.VCF, input_file_dict['CaseControl'], arguments.cores, variantsOutPutPath)
+
+    # --- InterMethodConnectivity --- #
+    if "InterMethod Connectivity" in experiments:
+        print(f'... Analyzing interconnectivity between methods ...')
+        # Create output path 
+        connectivityOutPutPath = CreateDir(arguments.OutPutPath, f'{df_name}/InterMethod_Connectivity/')
+        # Call
+        InterMethod_Connectivity(input_file_dict['Gold Standards'], arguments.InterConnectivity_Evidences, arguments.InterConnectivity_Confidence, df, df_name, interst_list, connectivityOutPutPath)
 
     # --- Phenotype Associations --- #
     if "HOLD_PHENOTYPE_ASSOCIATION" in experiments:
