@@ -15,7 +15,7 @@ def ParseExperiments(experiments_str):
     """
     experiments_lst = experiments_str.split(",")
     if 'All' in experiments_lst:
-        experiments_lst = ['GS Overlap', 'nDiffusion', 'MGI', 'OR', 'Pharmacology']
+        experiments_lst = ['GS Overlap', 'nDiffusion', 'MGI', 'OR', 'PubMed Enrichment', 'Pharmacology']
     print("Experiments to run: ", experiments_lst)
     return experiments_lst
 
@@ -65,7 +65,7 @@ def ParseInputFiles(arguments, experiments_lst):
         fileDict['PPI Network'], fileDict['PPI Network-GraphGene'] = ParseNetwork(arguments.PickNetwork)
     if any(check in ['MGI'] for check in experiments_lst):
         fileDict['MGI'] = GetInputs(None, None, None, None).MGI()
-    if any(check in ['OR'] for check in experiments_lst):
+    if any(check in ['OR', 'Variants By Sample'] for check in experiments_lst):
         fileDict['CaseControl'] = GetInputs(arguments.CaseControlPath, None,None, None).CaseControl()
     return fileDict
 

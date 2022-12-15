@@ -12,7 +12,8 @@ Notes:
 -Files need in CriteriaForSuccess/refs
     - HMD_HumanPhenotype_v2021.rpt (MGI High-Level Enrichment)
 '''
-
+print('--- STARTING PYCFS---', flush = True)
+print('... Loading Packages and Functions ...', flush = True)
 
 import pandas as pd
 import os
