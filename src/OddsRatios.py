@@ -100,18 +100,30 @@ class GetOddsRatios():
 
     # Plotting function for Odds Ratio S-curves
     def PlotOR(self, matrix2, matrix1, outpath, experiment_name, analysis, date):
+        # Subset for genes w/ OR > 1 and q-value < 0.1
+        sig_pos = matrix1[matrix1.OR >= 1]
+        sig_neg = matrix1[matrix1.OR < 1]
+
         # Plotting sorted Odds Ratio data
-        fig, ax = plt.subplots(figsize=(12, 8))
-        ax.scatter(matrix2.index, matrix2.OR, color='blue')
-        ax.scatter(matrix1.index, matrix1.OR, color='red',
-                    label='Significant Gene (q-val<0.1)')
-        ax.tick_params(axis='x', labelsize=16)
+        fig, ax = plt.subplots(figsize=(5,5))
+        # Plot scatter plots
+        ax.scatter(matrix2.index, matrix2.OR, color='gray')
+        ax.scatter(sig_pos.index, sig_pos.OR, color = 'red', label='OR > 1, q < 0.1')
+        ax.scatter(sig_neg.index, sig_neg.OR, color = 'blue', label = 'OR < 1, q < 0.1')
+        ax.fill_between(sig_pos.index, (sig_pos.LowerCI), (sig_pos.UpperCI), color='r', alpha=0.2)
+        ax.fill_between(sig_neg.index, (sig_neg.LowerCI), (sig_neg.UpperCI), color='b', alpha=0.2)
+
+        # Adjust plot settings
+        ax.tick_params(labelbottom = False, bottom = False)
         ax.tick_params(axis='y', labelsize=16)
         ax.axhline(y=1, color='black', linestyle='--')
-        ax.legend()
-        ax.set_ylabel('OR', fontsize=16)
-        ax.set_xlabel("Index")
-        ax.set_title(str("Odds Ratio-" + experiment_name + "_" + analysis))
+        ax.legend(fontsize = 12)
+        ax.spines['right'].set_visible(False)
+        ax.spines['top'].set_visible(False)
+        ax.spines['bottom'].set_visible(False)
+        plt.tight_layout()
+        ax.set_ylabel('Odds Ratio', fontsize=16)
+        ax.set_title(str("Odds Ratio-" + experiment_name + "_" + analysis), fontsize = 16)
 
         # Defining and adjusting the text labels for points of interest
         texts = []
