@@ -139,7 +139,6 @@ class VariantsBySample():
     def main(self):
         # Get genes
         genes = self.GetGenes()
-        print(self.CaseControl)
 
         # Parse variants for outputting
         cases, controls, case_variants, control_variants = self.Parse_Variants(self.VCF_path, self.CaseControl, genes, self.cores)
