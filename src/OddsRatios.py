@@ -121,7 +121,6 @@ class GetOddsRatios():
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
         ax.spines['bottom'].set_visible(False)
-        plt.tight_layout()
         ax.set_ylabel('Odds Ratio', fontsize=16)
         ax.set_title(str("Odds Ratio-" + experiment_name + "_" + analysis), fontsize = 16)
 
