@@ -26,6 +26,7 @@ class InterMethod_Connectivity():
         self.df_name = df_name
         self.interstList = interstList
         self.outpath = outpath
+        self.main()
 
     
 def selectEvidences(evidence_lst, network):
