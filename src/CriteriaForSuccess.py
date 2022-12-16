@@ -65,6 +65,22 @@ def parse_args():
 
     return parser.parse_args()
 
+
+# Skip buffering of Terminal outputs
+def Unbuffer():
+    class Unbuffered(object):
+        def __init__(self, stream):
+            self.stream = stream
+        def write(self, data):
+            self.stream.write(data)
+            self.stream.flush()
+        def writelines(self,datas):
+            self.stream.writelines(datas)
+            self.stream.flush()
+        def __getattr__(self, attr):
+            return getattr(self.stream, arr)
+    sys.stdout=Unbuffer()
+
 # Function create intermediate files for and run nDiffusion
 def RunnDiffusion(df, df_name, G_main, graph_gene, goldStandards, interst_list, nDiffOutPutPath):
     #Prepare input files
@@ -160,6 +176,7 @@ def RunCriteriaForSuccess(df, df_name, interst_list, num_genes, experiments, inp
         GetGeneDrugInteractions(df, df_name, interst_list, arguments.ExperimentName, PharmaOutPutPath, arguments.cores)
 
 def main(args):
+    Unbuffer()
     # Determine which experiments to run
     ExpToRun = ParseExperiments(args.PickExperiments)
 
