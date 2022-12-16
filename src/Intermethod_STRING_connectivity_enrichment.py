@@ -29,10 +29,10 @@ class InterMethod_Connectivity():
         self.main()
 
     
-    def selectEvidences(evidence_lst, network):
+    def selectEvidences(self, evidence_lst, network):
         return network[['node1', 'node2'] + evidence_lst]
 
-    def getEvidenceTypes(evidence_lst):
+    def getEvidenceTypes(self, evidence_lst):
         evidence_lst = [x for x in evidence_lst if x != 'None']
         if 'all' in evidence_lst:
             evidence_lst = ['neighborhood','fusion','cooccurence','coexpression','experimental','database','textmining']
@@ -41,7 +41,7 @@ class InterMethod_Connectivity():
         return evidence_lst
 
 
-    def getCombinedScore(net_df): #as calculated by STRING network
+    def getCombinedScore(self, net_df): #as calculated by STRING network
         cols = net_df.columns.values.tolist()
         cols = cols[2:]
         p = 0.041
@@ -54,7 +54,7 @@ class InterMethod_Connectivity():
         return net_df
 
 
-    def getEdgeWeight(edge_confidence):
+    def getEdgeWeight(self, edge_confidence):
         if edge_confidence == 'low':
             weight = 0.2
         elif edge_confidence == 'high':
@@ -68,7 +68,7 @@ class InterMethod_Connectivity():
         return weight
 
 
-    def getGeneSources(set_dict, savepath, status):
+    def getGeneSources(self, set_dict, savepath, status):
         geneSource = {}
         for k, v in set_dict.items():
             for protein in set_dict[k]:
@@ -84,7 +84,7 @@ class InterMethod_Connectivity():
             df.to_csv(savepath + 'GeneSet_Sources.csv', header = False)
         return geneSource
 
-    def getUniqueGenes(source_dict):
+    def getUniqueGenes(self, source_dict):
         uniqueGenes = {}
         for k, v in source_dict.items():
             if len(v) > 1:
@@ -93,19 +93,19 @@ class InterMethod_Connectivity():
                 uniqueGenes[k] = v
         return uniqueGenes
 
-    def checkConnection(x, y, gene_lst):
+    def checkConnection(self, x, y, gene_lst):
         if x in gene_lst and y in gene_lst:
             out = 'yes'
         else:
             out = 'no'
         return out
 
-    def getNodePair(x, y):
+    def getNodePair(self, x, y):
         pair = [x, y]
         pair.sort()
         return str(pair)
 
-    def getUniqueGeneNetwork(gene_lst, network):
+    def getUniqueGeneNetwork(self, gene_lst, network):
         n_df = network.copy()
         n_df1 = n_df[n_df['node1'].isin(gene_lst)]
         n_df2 = n_df[n_df['node2'].isin(gene_lst)]
@@ -119,7 +119,7 @@ class InterMethod_Connectivity():
         n_df_final.drop_duplicates(subset=['pair'], inplace=True, keep='first')
         return n_df_final
 
-    def getUniqueGeneNetwork_BwMethodConnections(network, unique_dict):
+    def getUniqueGeneNetwork_BwMethodConnections(self, network, unique_dict):
         net_genes = list(set(network['node1'].tolist() + network['node2'].tolist()))
         bw_method_edges = []
 
@@ -148,7 +148,7 @@ class InterMethod_Connectivity():
 
         return bw_method_edges
 
-    def getUniqueGeneCounts(uniqueGeneDict):
+    def getUniqueGeneCounts(self, uniqueGeneDict):
         uniqueGenesPerSet = {}
         for k, v in uniqueGeneDict.items():
             if v[0] in uniqueGenesPerSet:
@@ -157,15 +157,15 @@ class InterMethod_Connectivity():
                 uniqueGenesPerSet[v[0]] = [k]
         return uniqueGenesPerSet
 
-    def getNodeDegree(node, degree_dict):
+    def getNodeDegree(self, node, degree_dict):
         return degree_dict[node]
 
-    def getNodeDegreeDict(uniqueGenes, degree_df):
+    def getNodeDegreeDict(self, uniqueGenes, degree_df):
         df = degree_df.copy()
         df = df.loc[uniqueGenes]
         return df
 
-    def createRandomDegreeMatchedSet(uniqueGeneSets, stringNet_allGenes, stringNet_degree_df):
+    def createRandomDegreeMatchedSet(self, uniqueGeneSets, stringNet_allGenes, stringNet_degree_df):
         randomSets = {}
         for k, v in uniqueGeneSets.items():
             uniqueMappedGenes = v
@@ -187,7 +187,7 @@ class InterMethod_Connectivity():
             randomSets[k] = randomGenes
         return randomSets
 
-    def plotResultsNorm(randomDist, trueConnections, savepath):
+    def plotResultsNorm(self, randomDist, trueConnections, savepath):
         fig, ax = plt.subplots(tight_layout = True)
         ax.hist(randomDist, color='grey', density = True)
         ax.spines['right'].set_visible(False)
@@ -211,12 +211,12 @@ class InterMethod_Connectivity():
         plt.show()
         plt.close()
 
-    def outputRandomSets(randomSets_Connections):
+    def outputRandomSets(self, randomSets_Connections):
         with open(args.savepath + 'RandomSetConnections.txt','w') as f:
             for i in randomSets_Connections:
                 f.writelines(str(i) + '\n')
 
-    def outputUniqueGeneNetwork(uniqueGeneNetwork, uniqueGenes, savepath):
+    def outputUniqueGeneNetwork(self, uniqueGeneNetwork, uniqueGenes, savepath):
         uniqueGeneNetwork['node1_source'] = uniqueGeneNetwork['node1'].map(uniqueGenes)
         uniqueGeneNetwork['node2_source'] = uniqueGeneNetwork['node2'].map(uniqueGenes)
         uniqueGeneNetwork = uniqueGeneNetwork[uniqueGeneNetwork['node1_source'] != uniqueGeneNetwork['node2_source']]
@@ -224,7 +224,7 @@ class InterMethod_Connectivity():
         uniqueGeneNetwork.to_csv(savepath + 'UniqueGeneNetwork.csv', index = False)
 
 
-    def hypergeoOverlapGSgenes(method_genes, gs_genes, overlap, bkgd_size):
+    def hypergeoOverlapGSgenes(self, method_genes, gs_genes, overlap, bkgd_size):
         M = bkgd_size  # bkgd population size
         N = method_genes  # num draws from population
         n = gs_genes  # num successes in population
@@ -232,7 +232,7 @@ class InterMethod_Connectivity():
         pval = hypergeom.sf(k - 1, M, n, N)
         return pval
 
-    def geneSetOverlap(geneSets, savepath):
+    def geneSetOverlap(self, geneSets, savepath):
         geneSets_ = {}
         for k, v in geneSets.items():
             geneSets_[k] = set(v)
