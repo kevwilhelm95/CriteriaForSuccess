@@ -79,7 +79,7 @@ def Unbuffer():
             self.stream.flush()
         def __getattr__(self, attr):
             return getattr(self.stream, arr)
-    sys.stdout=Unbuffer()
+    sys.stdout=Unbuffered(sys.stdout)
 
 # Function create intermediate files for and run nDiffusion
 def RunnDiffusion(df, df_name, G_main, graph_gene, goldStandards, interst_list, nDiffOutPutPath):
