@@ -115,8 +115,8 @@ class VariantsBySample():
                 all_ensp = rec.info.get('Ensembl_proteinid', (rec.info['ENSP'][0],))
                 ea = self.fetch_EA_VEP(all_ea, rec.info['ENSP'][0], all_ensp, rec.info['Consequence'][0], EA_parser='canonical')
                 if not np.isnan(ea):
-                    row.append([rec.chrom, rec.pos, rec.ref, rec.alts[0], ea, rec.info['SYMBOL'][0], sample[0],zyg, rec.info['AF'][0] ])
-        cols = ['chr','pos','ref','alt','EA','gene','sample','zyg','AF']
+                    row.append([rec.info['ENSP'][0], rec.chrom, rec.pos, rec.ref, rec.alts[0], rec.info['HGVSp'][0], rec.info['Consequence'][0], ea, rec.info['SYMBOL'][0], sample[0],zyg, rec.info['AF'][0] ])
+        cols = ['ENSP', 'chr','pos','ref','alt', 'HGVSp', 'Consequence', 'EA','gene','sample','zyg','AF']
         col_type = {'chr': str, 'pos': str, 'ref': str, 'alt': str}
         df = pd.DataFrame(row, columns = cols)
         df = df.astype(col_type)
