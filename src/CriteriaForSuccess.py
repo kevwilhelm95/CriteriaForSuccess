@@ -35,7 +35,6 @@ from VariantsBySample import *
 from Intermethod_STRING_connectivity_enrichment import *
 
 # Get starting time for time calculation
-print('--- STARTING PYCFS---', flush = True)
 import time
 startTime = time.time()
 
@@ -163,7 +162,6 @@ def RunCriteriaForSuccess(df, df_name, interst_list, num_genes, experiments, inp
 def main(args):
     # Determine which experiments to run
     ExpToRun = ParseExperiments(args.PickExperiments)
-    print(args.VCF)
 
     # Load required files based on experiments chosen
     inputFileDict = ParseInputFiles(args, ExpToRun)

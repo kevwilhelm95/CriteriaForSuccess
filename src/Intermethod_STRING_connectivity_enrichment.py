@@ -110,11 +110,11 @@ class InterMethod_Connectivity():
         n_df1 = n_df[n_df['node1'].isin(gene_lst)]
         n_df2 = n_df[n_df['node2'].isin(gene_lst)]
         n_df_final = pd.concat([n_df1, n_df2])
-        n_df_final['bwSetConnection'] = n_df_final.apply(lambda x: checkConnection(x['node1'], x['node2'], gene_lst),
+        n_df_final['bwSetConnection'] = n_df_final.apply(lambda x: self.checkConnection(x['node1'], x['node2'], gene_lst),
                                                         axis=1)
         n_df_final = n_df_final[n_df_final['bwSetConnection'] == 'yes']
         n_df_final.drop_duplicates(inplace=True)
-        n_df_final['pair'] = n_df_final.apply(lambda x: getNodePair(x['node1'], x['node2']), axis=1)
+        n_df_final['pair'] = n_df_final.apply(lambda x: self.getNodePair(x['node1'], x['node2']), axis=1)
         n_df_final.sort_values(by='node1', inplace=True)
         n_df_final.drop_duplicates(subset=['pair'], inplace=True, keep='first')
         return n_df_final
@@ -170,7 +170,7 @@ class InterMethod_Connectivity():
         for k, v in uniqueGeneSets.items():
             uniqueMappedGenes = v
             uniqueMappedGenes = [x for x in uniqueMappedGenes if x in stringNet_allGenes] #need to filter for genes that are mapped to STRING appropriately
-            uniqueMappedGenes_degree_df = getNodeDegreeDict(uniqueMappedGenes, stringNet_degree_df)
+            uniqueMappedGenes_degree_df = self.getNodeDegreeDict(uniqueMappedGenes, stringNet_degree_df)
             uniqueMappedGenes_degree_df = pd.DataFrame(uniqueMappedGenes_degree_df.groupby('degree_rounded')['degree'].count())
             #in this dictionary: key is degree, value is count of genes with that degree
             uniqueMappedGenes_degree_dict = dict(zip(uniqueMappedGenes_degree_df.index.tolist(), uniqueMappedGenes_degree_df['degree'].tolist()))
@@ -211,8 +211,8 @@ class InterMethod_Connectivity():
         plt.show()
         plt.close()
 
-    def outputRandomSets(self, randomSets_Connections):
-        with open(args.savepath + 'RandomSetConnections.txt','w') as f:
+    def outputRandomSets(self, randomSets_Connections, savepath):
+        with open(savepath + 'RandomSetConnections.txt','w') as f:
             for i in randomSets_Connections:
                 f.writelines(str(i) + '\n')
 
@@ -301,4 +301,4 @@ class InterMethod_Connectivity():
                 z_fit = (len(trueConnections) - mu)/sigma
 
                 self.plotResultsNorm(randomSets_Connections, trueConnections, newOutPutPath)
-                self.outputRandomSets(randomSets_Connections)
+                self.outputRandomSets(randomSets_Connections, newOutPutPath)
