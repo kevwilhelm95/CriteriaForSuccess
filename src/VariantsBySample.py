@@ -112,11 +112,7 @@ class VariantsBySample():
             zyg = self.convert_zygo(rec.samples[sample[0]]['GT'])
             if (zyg!=0) and (rec.info['SYMBOL'][0] in list(genes)):
                 all_ea = rec.info.get('EA', (None,))
-                print(all_ea)
-                print(type(all_ea))
                 all_ensp = rec.info.get('Ensembl_proteinid', (rec.info['ENSP'][0],))
-                print(all_ensp)
-                print(type(all_ensp))
                 ea = self.fetch_EA_VEP(all_ea, rec.info['ENSP'][0], all_ensp, rec.info['Consequence'][0], EA_parser='canonical')
                 if not np.isnan(ea):
                     row.append([rec.info['ENSP'][0], rec.chrom, rec.pos, rec.ref, rec.alts[0], rec.info['HGVSp'][0], rec.info['Consequence'][0], ea, rec.info['SYMBOL'][0], sample[0],zyg, rec.info['AF'][0] ])

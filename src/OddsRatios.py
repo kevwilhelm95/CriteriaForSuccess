@@ -120,11 +120,13 @@ class GetOddsRatios():
                                      names=['chrom', 'pos', 'ref', 'alt', 'gene', 'Ensembl_proteinid', 'ENSP', 'Consequence','HGVSp', 'EA', 'AN_0', 'AN_1', 'Cases', 'Controls', 'AC_1', 'AC_Het_1', 'AC_Hom_1', 'AC_0', 'AC_Het_0', 'AC_Hom_0', 'CC_ALL', 'CC_DOM', 'CC_REC', 'AF', 'AC'], low_memory=False)
          # Clean the file now
         self.exactTest = self.exactTest[self.exactTest.Consequence.str.contains("frameshift_variant|missense_variant|stop_gained|stop_lost", case = False)].reset_index() # Need to include splice sites
-        #for rec in self.exactTest:
-
-        self.exactTest['EA-Clean'] = [x.split(',')[0] for x in self.exactTest['EA']]
-        self.exactTest['EA-Clean'] = [-1 if x == '.' else x for x in self.exactTest['EA-Clean']]
-        self.exactTest['EA-Clean'] = self.exactTest['EA-Clean'].astype(float)
+        clean_ea = []
+        for idx, rec in self.exactTest.iterrows():
+            all_ea = tuple(map(str, rec.EA.split(",")))
+            all_ensembl_proteinid = tuple(map(str, rec.Ensembl_proteinid.split(",")))
+            ea = self.fetch_EA_VEP(all_ea, rec.ENSP, all_ensembl_proteinid, rec.Consequence, EA_parser = 'canonical')
+            clean_ea.append(ea)
+        self.exactTest['EA-Clean'] = clean_ea
 
 
     # Clean input files to format for program - self.totalCases, self.totalControls
