@@ -126,4 +126,4 @@ class PubMed_Enrichment():
                 print(f"--- Querying {gL} genes for co-mentions with {keyword}---")
                 # Create directory
                 hold_OutPutPath = CreateDir(self.output_path, f"{gL}/{keyword}")
-                self.GetEnrichment(gL_hold, keyword, background_genes, max_workers = 13, outpath = hold_OutPutPath)
+                self.GetEnrichment(gL_hold, keyword, background_genes, max_workers = 8, outpath = hold_OutPutPath)
