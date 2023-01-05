@@ -29,6 +29,59 @@ class GetOddsRatios():
 
         self.main()
 
+    # Fetch EA score of canonical ENSP id
+    def fetch_EA_VEP(self, EA, canon_ensp, all_ensp, csq, EA_parser = 'canonical'):
+        """
+        Fetch the EA score index based on the canonical ENSP id index
+        Args:
+            EA (_type_): _description_
+            canon_ensp (_type_): _description_
+            all_ensp (_type_): _description_
+            csq (_type_): _description_
+            EA_parser (str, optional): _description_. Defaults to 'canonical'.
+        """
+        if 'stop_gained' in csq or 'frameshift_variant' in csq or 'stop_lost' in csq or 'splice_donor_variant' in csq or 'splice_acceptor_variant' in csq:
+            return 100
+        if EA_parser == 'canonical':
+            try:
+                canon_idx = all_ensp.index(canon_ensp)
+            except ValueError:
+                return np.nan
+            else:
+                return self.validate_EA(EA[canon_idx])
+        else:
+            newEA = []
+            for score in EA:
+                newEA.append(self.validate_EA(score))
+            if np.isnan(newEA).all():
+                return np.nan
+            elif EA_parser == 'mean':
+                return np.nanmean(newEA)
+            elif EA_parser == 'max':
+                return np.nanmax(newEA)
+            else:
+                return newEA
+
+    # Validate the EA score pulled from VCF
+    def validate_EA(self, ea):
+        """
+        Checks for valid EA score
+        Args:
+            ea (str/float/None): EA score as string
+        Returns:
+            float: EA score between 0-100 if valid, otherwise returns NaN
+        """
+        try:
+            ea = float(ea)
+        except ValueError:
+            if type(ea) == str and (ea == 'fs-indel' or 'STOP' in ea):
+                ea = 100
+            else:
+                ea = np.nan
+        except TypeError:
+            ea = np.nan
+        return ea
+
     # Run ExactTest script to get variant counts in cases and controls
     def RunExactTest(self):
         print("---Preparing intermediate files for ExactTest---")
@@ -64,9 +117,11 @@ class GetOddsRatios():
         print("---ExactTest Script Finished ---", flush = True)
         self.exactTest = pd.read_csv(f"{intermediate_outpath}/CaseControl.Variants.OR.txt",
                                     sep='\t', header=None,
-                                     names=['chrom', 'pos', 'ref', 'alt', 'gene', 'ENSP', 'Consequence','HGVSp', 'EA', 'AN_0', 'AN_1', 'Cases', 'Controls', 'AC_1', 'AC_Het_1', 'AC_Hom_1', 'AC_0', 'AC_Het_0', 'AC_Hom_0', 'CC_ALL', 'CC_DOM', 'CC_REC', 'AF', 'AC'], low_memory=False)
+                                     names=['chrom', 'pos', 'ref', 'alt', 'gene', 'Ensembl_proteinid','ENSP', 'Consequence','HGVSp', 'EA', 'AN_0', 'AN_1', 'Cases', 'Controls', 'AC_1', 'AC_Het_1', 'AC_Hom_1', 'AC_0', 'AC_Het_0', 'AC_Hom_0', 'CC_ALL', 'CC_DOM', 'CC_REC', 'AF', 'AC'], low_memory=False)
          # Clean the file now
         self.exactTest = self.exactTest[self.exactTest.Consequence.str.contains("frameshift_variant|missense_variant|stop_gained|stop_lost", case = False)].reset_index() # Need to include splice sites
+        #for rec in self.exactTest:
+
         self.exactTest['EA-Clean'] = [x.split(',')[0] for x in self.exactTest['EA']]
         self.exactTest['EA-Clean'] = [-1 if x == '.' else x for x in self.exactTest['EA-Clean']]
         self.exactTest['EA-Clean'] = self.exactTest['EA-Clean'].astype(float)
