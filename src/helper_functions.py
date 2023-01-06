@@ -16,7 +16,7 @@ def ParseExperiments(experiments_str):
     """
     experiments_lst = experiments_str.split(",")
     if 'All' in experiments_lst:
-        experiments_lst = ['GS Overlap', 'nDiffusion', 'MGI', 'OR', 'PubMed Enrichment', 'Pharmacology']
+        experiments_lst = ['GS Overlap', 'nDiffusion', 'MGI', 'OR', 'PubMed Enrichment', 'Variants By Sample', 'InterMethod Connectivity', 'Pharmacology']
     print("Experiments to run: ", experiments_lst)
     return experiments_lst
 
