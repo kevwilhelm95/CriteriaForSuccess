@@ -49,18 +49,20 @@ class GetInputs():
             string = pd.read_csv(self.path + "Pathway_output/AC" + str(self.acThresh) + "/STRING_Cases/Step8_SigCoreGenesAbove5thPercentile.txt", sep="\t", header=None, skiprows=2, names=['Genes'])
 
             # Create dataframes
+            fdr01_allunique = np.unique(pd.concat([eaml_fdr01.gene.dropna(), epi_fdr01.Genes.dropna(), eaw_fdr01.gene.dropna(), reactome.Genes.dropna(), string.Genes.dropna()], axis = 0).tolist())
+            fdr001_allunique = np.unique(pd.concat([eaml_fdr001.gene.dropna(), epi_fdr001.Genes.dropna(), eaw_fdr001.gene.dropna(), reactome.Genes.dropna(), string.Genes.dropna()], axis = 0).tolist()) 
             self.fdr01_df = pd.DataFrame({'EAML': eaml_fdr01.gene.dropna(),
                                         'EPI': epi_fdr01.Genes.dropna(), 
                                         'EAW': eaw_fdr01.gene.dropna(), 
                                         'Reactome': reactome.Genes.dropna(), 
                                         'STRING': string.Genes.dropna(), 
-                                        'AllUnique': np.unique(pd.concat([eaml_fdr01.gene.dropna(), epi_fdr01.Genes.dropna(), eaw_fdr01.gene.dropna(), reactome.Genes.dropna(), string.Genes.dropna()], axis = 0).tolist())})
+                                        'AllUnique': pd.Series(fdr01_allunique)})
             self.fdr001_df = pd.DataFrame({'EAML': eaml_fdr001.gene, 
                                             'EPI': epi_fdr001.Genes, 
                                             'EAW': eaw_fdr001.gene, 
                                             'Reactome': reactome.Genes.dropna(), 
                                             'STRING': string.Genes.dropna(),
-                                            'AllUnique':np.unique(pd.concat([eaml_fdr001.gene.dropna(), epi_fdr001.Genes.dropna(), eaw_fdr001.gene.dropna(), reactome.Genes.dropna(), string.Genes.dropna()], axis = 0).tolist())})
+                                            'AllUnique': pd.Series(fdr001_allunique)})
 
 
         # Creates three sheets - Meta sheet + Consensus lists, Stats for pairwise method overlap, Count for # of methods that find a certain gene
