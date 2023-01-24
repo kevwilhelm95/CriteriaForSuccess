@@ -142,8 +142,13 @@ class VariantsBySample():
 
         # Parse variants for outputting
         cases, controls, case_variants, control_variants = self.Parse_Variants(self.VCF_path, self.CaseControl, genes, self.cores)
-        all_variants = pd.concat([case_variants, control_variants], axis = 0, ignore_index = True)
+        if case_variants.shape[0] == 0:
+            control_variants.to_csv(self.outpath + "Controls_VariantsBySample.csv", sep = ',', index = False)
+        elif control_variants.shape[0] == 0:
+            case_variants.to_csv(self.outpath + "Cases_VariantsBySample.csv", sep = ',', index = False)
+        else:
+            all_variants = pd.concat([case_variants, control_variants], axis = 0, ignore_index = True)
 
-        case_variants.to_csv(self.outpath + "Cases_VariantsBySample.csv", sep = ',', index = False)
-        control_variants.to_csv(self.outpath + "Controls_VariantsBySample.csv", sep = ',', index = False)
-        all_variants.to_csv(self.outpath + "CaseControl_VariantsBySample.csv", sep = ',', index = False)
+            case_variants.to_csv(self.outpath + "Cases_VariantsBySample.csv", sep = ',', index = False)
+            control_variants.to_csv(self.outpath + "Controls_VariantsBySample.csv", sep = ',', index = False)
+            all_variants.to_csv(self.outpath + "CaseControl_VariantsBySample.csv", sep = ',', index = False)
