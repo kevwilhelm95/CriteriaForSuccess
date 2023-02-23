@@ -459,6 +459,6 @@ class GetInputs():
         Self with self.path defined as path to .csv of CaseControl file
         - 2 column file (1-Sample IDs, 2-Case/Control(1/0))
         '''
-        self.caseControl = pd.read_csv(self.path, sep=',', header=None)
+        self.caseControl = pd.read_csv(self.path, sep=',', header=None, dtype = np.int32)
         return self.caseControl
 
