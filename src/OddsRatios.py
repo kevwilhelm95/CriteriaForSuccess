@@ -390,7 +390,7 @@ class GetOddsRatios():
         else:
             dmatrix2 = dmatrix1
         dmatrix3 = dmatrix2.sort_values(
-                by='OR', axis=0, ascending=True, inplace=False).reset_index()
+                by='OR', axis=0, ascending=True, inplace=False).reset_index(drop=True)
             
         dmatrix3.to_csv(outpath + self.expName + '_' + analysis +
                     '_Gene-Based_' + str(date) + '.csv', index=False)
