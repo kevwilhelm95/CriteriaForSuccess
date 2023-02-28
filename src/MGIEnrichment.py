@@ -111,7 +111,7 @@ class MGIEnrichment():
                                     "Enrichment - p value": [f_pval],
                                     "# of Candidates with Phenotypic Model": [query_phen],
                                     "Ratio of genes with phenotypic model": [query_phen / len(all_repeated)],
-                                    "Genes with MGI Phenotype": [str(cand_list)]} )
+                                    "Genes with MGI Phenotype": [",".join(str(cand_list))]} )
 
             return return_df
 
