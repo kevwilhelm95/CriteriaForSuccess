@@ -66,6 +66,14 @@ class GoldStandardOverlap():
             # Make experimental list output directory
             outpath = CreateDir(outpath, f'{exp}/')
 
+            # Check data integrity
+            if gs_hold == 0:
+                print("ERROR: No genes found in gold standards")
+                return
+            elif exp_hold == 0:
+                print("ERROR: No genes found in query")
+                return
+
             # Plot figure
             fig = plt.figure(figsize=(10, 5))
             out = venn2(subsets=((len(exp_hold) - len(overlap)),
@@ -84,6 +92,8 @@ class GoldStandardOverlap():
             for text in out.set_labels:
                 text.set_fontsize(20)
             for text in out.subset_labels:
+                if text == None:
+                    continue
                 text.set_fontsize(18)
             plt.text(0, -0.7,
                     str("p = " + str(round(pval, 8))),
