@@ -60,7 +60,7 @@ def parse_args():
     parser.add_argument('--CaseControlPath', nargs='?', default = './', help = 'Path to CSV with Sample IDs and 1/0 (Case/Control) - No header')
     parser.add_argument('--OutPutPath', nargs='?', default = './', help = 'Path to output directory')
     parser.add_argument('--AC_Threshold', nargs='?', type = int, default =5, help = 'Select the Allele Count Threshold to include in Consensus2')
-    parser.add_argument('--ref', choices = ('GRCh37', 'GRCh38', 'hg19', 'hg38'), help = 'Gene Location file. Choices = GRCh37, GRCh38, hg19, hg38')
+    parser.add_argument('--ref', choices = ('GRCh37', 'GRCh38', 'hg19', 'hg38'), default = 'GRCh38', help = 'Gene Location file. Choices = GRCh37, GRCh38, hg19, hg38')
     parser.add_argument('--cores', nargs='?', type = int, default = 1, help = 'Number of cores used to run the program')
 
     return parser.parse_args()
