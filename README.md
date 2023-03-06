@@ -8,26 +8,45 @@ Installation
 
 # Required arguments:
 
-| Argument | Description |
-|--------- | ----------- |
-|--ExperimentName | Name of disease and or cohort |
-|--InputPath | Path to BigPipeline Results |
-|--Analysis | Which input files to use; Choices = BigPipeline, InputList |
-|--GSPath | Path to CSV of Gold Standard Lists |
-|--CaseControlPath | Path to CSV; Col. 1- IDs, Col.2- 1,0 (Case,Control); No header |
-|--ExactTestPath | Path to .txt output from ExactTest.sh |
-|--OutPutPath | Path to output directory |
+| Argument | Description | Options |
+|--------- | ----------- | ------- |
+|--ExperimentName | Name of disease and/or cohort | NA|
+|--InputPath or --InputList | Path to BigPipeline result directory or single-column .txt file with genes of interest | NA |
+|--PickExperiments| No-space comma-separated list of experiments to run | All (default), GS Overlap, nDiffusion, MGI, OR, PubMed Enrichment, Variants By Sample, Intermethod Connectivity, Pharmacology |
+|--OutPutPath | Path to output directory | NA |
+|--cores | Number of cores used to run | NA | 
 
 # Optional arguments:
 
-| Argument | Description |
-|----------|-------------|
-|--InputList | Path to .txt file of gene list |
-|--nDiffusionGraph | Network to use for nDiffusion; Choices = "STRINGv11", "STRINGv10", "MeTeOR" |
-|--AC_Threshold | Threshold of Pathways to incorporate into Consensus2 (Default = 5) |
-|--cores | Number of cores used to run |
+| Argument | Description | Options | Required for |
+|----------|-------------|---------|--------------|
+|--GSPath | Path to CSV of Gold Standard Lists | NA | All, GS Overlap, nDiffusion, Intermethod Connectivity |
+|--VCF | Path to VCF | NA | All, OR |
+|--PickNetwork | Network to use for nDiffusion/Intermethod Connectivity | STRINGv10, STRINGv11, MeTEOR (default: STRINGv11) | All, nDiffusion, Intermethod Connectivity |
+|--PubMedKeywords | No-space comma-separated list of key words to query for co-mention (e.g. "Type 2 Diabetes,Insulin") | NA | All, PubMed Enrichment |
+|--InterConnectivity_Evidences | No-space comma-separated list of evidence types | neighborhood, fusion, cooccurence, coexpression, experimental, database, textmining | All, Intermethod Connectivity |
+|--InterConnectivity_Confidence | Edge weight to test for connections | all, medium, high, highest | All, Intermethod Connectivity |
+|--CaseControlPath | Path to CSV; Col. 1- IDs, Col.2- 1,0 (Case,Control); No header | NA | All, OR, Variants By Sample |
+|--AC_Threshold | Threshold of Pathways to incorporate into Consensus2 (Default = 5) | NA | Only used if --InputPath used |
+|--ref | Genomic reference locations | GRCh37, GRCh38 (default), hg19, hg38 | All, OR, Variants By Sample |
 
-# Required reference files not in repo:
-- STRINGv11.txt
-- STRINGv10.txt
-- MeTeOR.txt
+# Example Call
+python CriteriaForSuccess.py \
+--ExperimentName Test_run \
+--InputPath /path/to/dir/ \
+--PickExperiments All \
+--CaseControlPath /path/to/sample.csv \
+--OutPutPath /path/to/output/dir \
+--cores 1 \
+--GSPath /path/to/GS.csv \
+--VCF /path/to/vcf.gz \
+--PickNetwork STRINGv11 \
+--PubMedKeywords "Type 2 Diabetes,Insulin" \
+--InterConnectivity_Evidences "neighborhood,fusion,coexpression" \
+--InterConnectivity_Confidence highest \
+--CaseControlPath /path/to/samples.csv \
+--AC_Threshold 5 \
+--ref GRCh38
+
+# Experiment Descriptions
+
