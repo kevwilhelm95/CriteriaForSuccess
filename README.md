@@ -49,4 +49,13 @@ python CriteriaForSuccess.py \
 --ref GRCh38
 
 # Experiment Descriptions
-
+| Experiment | Description |
+|-----------| -------------|
+| GS Overlap | Number of Gold Standard genes recovered by experimental list. Significance tested by hypergeometric test |
+| nDiffusion | Network connectivity against Gold Standard genes using nDiffusion algorithm (PMID: 31797167). Significance tested by Z score against 100 random, degree-matched gene sets |
+| InterMethod Connectivity | First-neighbor enrichment to Gold Standard genes. Significance tested by Z score against 100 random, degree-matched gene sets |
+| PubMed Enrichment | Co-mentions in title or abstract by query gene for defined keywords. Significance tested by Z score using 100 random gene sets |
+| OR (Odds Ratio) | Allele frequency differences between cases/controls for by variants (Allele frequency > 1%) or by gene (Allele frequency < 1% variants collapsed by gene). Significance tested by Fisher's Exact Test |
+| Variants By Sample | Parser to obtain .txt file containing information on which samples harbor which variants |
+| MGI | Enrichment test for high-level phenotypic abnormalities observed in mouse-models obtained from the Mouse Genome Informatics resource. Significance tested by Fisher's Exact Test |
+| Pharmacology | Pulls drug-protein interactions for query genes from DGIdb.org |
