@@ -67,10 +67,10 @@ class GoldStandardOverlap():
             outpath = CreateDir(outpath, f'{exp}/')
 
             # Check data integrity
-            if gs_hold == 0:
+            if len(gs_hold) == 0:
                 print("ERROR: No genes found in gold standards")
                 return
-            elif exp_hold == 0:
+            elif len(exp_hold) == 0:
                 print("ERROR: No genes found in query")
                 return
 
