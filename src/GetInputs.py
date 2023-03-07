@@ -53,7 +53,7 @@ class GetInputs():
                                         'EPI': epi_fdr01.Genes.dropna(), 
                                         'EAW': eaw_fdr01.gene.dropna(), 
                                         'Reactome': reactome.Genes.dropna(), 
-                                        'STRING': string.Genes.dropna())})
+                                        'STRING': string.Genes.dropna()})
             self.fdr001_df = pd.DataFrame({'EAML': eaml_fdr001.gene, 
                                             'EPI': epi_fdr001.Genes, 
                                             'EAW': eaw_fdr001.gene, 
