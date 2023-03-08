@@ -158,7 +158,7 @@ class GetInputs():
                                     "Consensus4": self.consensus4['List5'].dropna().reset_index(drop=True),
                                     "Consensus3": self.consensus3['List5'].dropna().reset_index(drop=True),
                                     "Consensus2": self.consensus2['List5'].dropna().reset_index(drop=True),
-                                    "AllUnique": self.allunique}
+                                    "AllUnique": pd.Series(self.allunique)}
                 self.consensus_df = pd.DataFrame(consensus_out_dict)
 
                 overlap_out_dict = {"List1": ['EPI', 'EPI', 'EPI', 'EPI', 'EAW', 'EAW', 'EAW',
