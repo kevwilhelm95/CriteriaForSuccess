@@ -12,7 +12,7 @@ Installation
 |--------- | ----------- | ------- |
 |--ExperimentName | Name of disease and/or cohort | NA|
 |--InputPath or --InputList | Path to BigPipeline result directory or single-column .txt file with genes of interest | NA |
-|--PickExperiments| No-space comma-separated list of experiments to run | All (default), GS Overlap, nDiffusion, MGI, OR, PubMed Enrichment, Variants By Sample, Intermethod Connectivity, Pharmacology |
+|--PickExperiments| No-space comma-separated list of experiments to run | All (default), GS Overlap, nDiffusion, MGI, OR, PubMed Enrichment, Variants By Sample, InterMethod Connectivity, Pharmacology |
 |--OutPutPath | Path to output directory | NA |
 |--cores | Number of cores used to run | NA | 
 
@@ -20,12 +20,12 @@ Installation
 
 | Argument | Description | Options | Required for |
 |----------|-------------|---------|--------------|
-|--GSPath | Path to CSV of Gold Standard Lists | NA | All, GS Overlap, nDiffusion, Intermethod Connectivity |
+|--GSPath | Path to CSV of Gold Standard Lists | NA | All, GS Overlap, nDiffusion, InterMethod Connectivity |
 |--VCF | Path to VCF | NA | All, OR |
-|--PickNetwork | Network to use for nDiffusion/Intermethod Connectivity | STRINGv10, STRINGv11, MeTEOR (default: STRINGv11) | All, nDiffusion, Intermethod Connectivity |
+|--PickNetwork | Network to use for nDiffusion/Intermethod Connectivity | STRINGv10, STRINGv11, MeTEOR (default: STRINGv11) | All, nDiffusion, InterMethod Connectivity |
 |--PubMedKeywords | No-space comma-separated list of key words to query for co-mention (e.g. "Type 2 Diabetes,Insulin") | NA | All, PubMed Enrichment |
-|--InterConnectivity_Evidences | No-space comma-separated list of evidence types | neighborhood, fusion, cooccurence, coexpression, experimental, database, textmining | All, Intermethod Connectivity |
-|--InterConnectivity_Confidence | Edge weight to test for connections | all, medium, high, highest | All, Intermethod Connectivity |
+|--InterConnectivity_Evidences | No-space comma-separated list of evidence types | neighborhood, fusion, cooccurence, coexpression, experimental, database, textmining | All, InterMethod Connectivity |
+|--InterConnectivity_Confidence | Edge weight to test for connections | all, medium, high, highest | All, InterMethod Connectivity |
 |--CaseControlPath | Path to CSV; Col. 1- IDs, Col.2- 1,0 (Case,Control); No header | NA | All, OR, Variants By Sample |
 |--AC_Threshold | Threshold of Pathways to incorporate into Consensus2 (Default = 5) | NA | Only used if --InputPath used |
 |--ref | Genomic reference locations | GRCh37, GRCh38 (default), hg19, hg38 | All, OR, Variants By Sample |
