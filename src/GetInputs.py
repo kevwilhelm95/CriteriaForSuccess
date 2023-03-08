@@ -232,9 +232,6 @@ class GetInputs():
                         writer, sheet_name="Overlap Summary", index=False)
                     self.method_count_df.to_excel(
                         writer, sheet_name="Gene-Method Counts", index=False)
-                    self.gene_connection.to_excel(writer, sheet_name = 'UniqueLinkedCounts', index=False)
-
-                self.interaction_df.to_csv(self.opath + df_name + "/STRING/" + "UniqueLinked_STRING-InteractionFile.csv", index = False)
 
                 # Change names of consensus_df for continuing in script
                 if df_name == 'FDR_0.1':
