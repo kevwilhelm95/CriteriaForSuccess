@@ -34,6 +34,7 @@ class InterMethod_Connectivity():
 
     def getEvidenceTypes(self, evidence_lst):
         evidence_lst = [x for x in evidence_lst if x != 'None']
+        evidence_lst = [x.split(' ') if ' ' in x else x for x in evidence_lst ]
         if 'all' in evidence_lst:
             evidence_lst = ['neighborhood','fusion','cooccurence','coexpression','experimental','database','textmining']
         else:
