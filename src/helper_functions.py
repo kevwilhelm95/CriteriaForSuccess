@@ -14,11 +14,20 @@ def ParseExperiments(experiments_str):
     Returns:
         list: parsed list of experiments needing to be run
     """
-    experiments_lst = experiments_str.split(",")
-    if 'All' in experiments_lst:
-        experiments_lst = ['GS Overlap', 'nDiffusion', 'MGI', 'OR', 'PubMed Enrichment', 'Variants By Sample', 'InterMethod Connectivity', 'Pharmacology']
-    print("Experiments to run: ", experiments_lst)
-    return experiments_lst
+    in_lst = experiments_str.split(",")
+    experiments_lst = ['GS Overlap', 'nDiffusion', 'MGI', 'OR', 'PubMed Enrichment',
+                       'Variants By Sample', 'InterMethod Connectivity', 'Pharmacology']
+    run_lst = []
+    if 'All' in in_lst:
+        run_lst = experiments_lst
+    else: 
+        for exp in in_lst:
+            if exp in experiments_lst:
+                run_lst.append(exp)
+            else:
+                print(f"Experiment unknown: {exp}")
+    print("Experiments to run: ", run_lst)
+    return run_lst
 
 # Load the PPI Network file
 def ParseNetwork(network_str):
