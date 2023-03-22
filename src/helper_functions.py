@@ -108,10 +108,22 @@ def CreateSampleOnlyFile(CaseControl_file, output_path):
     samp_df.to_csv(output_path + "CaseControl_SampleOnly.txt", sep = '\t', index=False, header=False)
 
 def CreateSampleCaseTabFile(CaseControl_file, output_path):
+    """Creates sample-only file required for ExactTest.sh
+
+    Args:
+        CaseControl_file (pd.DataFrame): Loaded dataframe from --CaseControl with sampleIDs in column 1 and 1/0 (Case/Control) in column 2
+        output_path (string): Save path for output file; Currently set as --OutPutPath /IntermediateFiles
+    """
     CaseControl_file.to_csv(output_path + "CaseControl_SampleCase.txt", sep='\t', index = False, header = False)
 
 # Create intermediate .fam file for ExactTest
 def CreateSampleFamFile(CaseControl_file, output_path):
+    """Creates fam.fam file required for ExactTest.sh
+
+    Args:
+        CaseControl_file (pd.DataFrame): Loaded dataframe from --CaseControl with sampleIDs in column 1 and 1/0 (Case/Control) in column 2
+        output_path (string): Save path for output file; Currently set as --OutPutPath /IntermediateFiles
+    """
     samp_fam_df = pd.DataFrame({'famid':CaseControl_file.iloc[:,0],
                                 'sampid':CaseControl_file.iloc[:,0],
                                 'fatherid':0,
