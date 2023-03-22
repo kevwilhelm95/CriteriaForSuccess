@@ -454,7 +454,7 @@ class GetOddsRatios():
             b1 = []
             AF_hold = []
             A = variants_df[variants_df.variants == v]
-            ea_hold = A.EA.values[0]
+            ea_hold = A['EA-Clean'].values[0]
             AF_hold = A.AF.values
             eas.append(ea_hold)
             afs.append(AF_hold)
