@@ -445,9 +445,6 @@ class GetOddsRatios():
 
         # Loop through each variant and calculate ORs
         for v in variants:
-            #if v == 'GCSAML-AS1:p.Thr20Ala':
-                #continue
-
             a = []
             b = []
             a1 = []
