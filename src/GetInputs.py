@@ -30,7 +30,7 @@ class GetInputs():
             eaml = pd.read_csv(self.path +
                                "EAML_output/meanMCC-results.nonzero-stats.rankings", sep = ',')
             self.num_genes = eaml.shape[0]
-            eaml_fdr01 = eaml[(eaml['qvalue'] <= 0.1)
+            eaml_fdr01 = eaml[(eaml['qvalue'] <= 0.1)]
             eaml_fdr001 = eaml[(eaml['qvalue'] <= 0.01)]
 
             # EPIMUTESTR
