@@ -115,7 +115,7 @@ class GetOddsRatios():
 
         # Load outputback in as self.exactTest
         print("---ExactTest Script Finished ---", flush = True)
-        self.exactTest = pd.read_csv(f"{intermediate_outpath}/CaseControl.Variants.OR.txt",
+        self.exactTest = pd.read_csv(f"{intermediate_outpath}CaseControl.Variants.OR.txt",
                                     sep='\t', header=None,
                                      names=['chrom', 'pos', 'ref', 'alt', 'gene', 'Ensembl_proteinid', 'ENSP', 'Consequence','HGVSp', 'EA', 'AN_0', 'AN_1', 'Cases', 'Controls', 'AC_1', 'AC_Het_1', 'AC_Hom_1', 'AC_0', 'AC_Het_0', 'AC_Hom_0', 'CC_ALL', 'CC_DOM', 'CC_REC', 'AF', 'AC'], low_memory=False)
          # Clean the file now
