@@ -100,10 +100,10 @@ class GetOddsRatios():
         exactTest_sh = f"{os.getcwd()}/ExactTest.sh"
         cmd = [exactTest_sh, 
                 self.VCF_path, 
-                f"{intermediate_outpath}/AllUniqueGenesLocationFile.txt",
-                f"{intermediate_outpath}/CaseControl_SampleOnly.txt",
-                f"{intermediate_outpath}/CaseControl_SampleCase.txt",
-                f"{intermediate_outpath}/CaseControl_fam.fam",
+                f"{intermediate_outpath}AllUniqueGenesLocationFile.txt",
+                f"{intermediate_outpath}CaseControl_SampleOnly.txt",
+                f"{intermediate_outpath}CaseControl_SampleCase.txt",
+                f"{intermediate_outpath}CaseControl_fam.fam",
                 intermediate_outpath]
 
         # Make call to .sh script
@@ -117,7 +117,7 @@ class GetOddsRatios():
         print("---ExactTest Script Finished ---", flush = True)
         self.exactTest = pd.read_csv(f"{intermediate_outpath}CaseControl.Variants.OR.txt",
                                     sep='\t', header=None,
-                                     names=['chrom', 'pos', 'ref', 'alt', 'gene', 'Ensembl_proteinid', 'ENSP', 'Consequence','HGVSp', 'EA', 'AN_0', 'AN_1', 'Cases', 'Controls', 'AC_1', 'AC_Het_1', 'AC_Hom_1', 'AC_0', 'AC_Het_0', 'AC_Hom_0', 'CC_ALL', 'CC_DOM', 'CC_REC', 'AF', 'AC'], low_memory=False)
+                                    names=['chrom', 'pos', 'ref', 'alt', 'gene', 'Ensembl_proteinid', 'ENSP', 'Consequence','HGVSp', 'EA', 'AN_0', 'AN_1', 'Cases', 'Controls', 'AC_1', 'AC_Het_1', 'AC_Hom_1', 'AC_0', 'AC_Het_0', 'AC_Hom_0', 'CC_ALL', 'CC_DOM', 'CC_REC', 'AF', 'AC'], low_memory=False)
          # Clean the file now
         self.exactTest = self.exactTest[self.exactTest.Consequence.str.contains("frameshift_variant|missense_variant|stop_gained|stop_lost", case = False)].reset_index() # Need to include splice sites
         clean_ea = []
