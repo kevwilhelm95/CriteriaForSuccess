@@ -125,6 +125,9 @@ class PubMed_Enrichment():
 
         # Calculate Z-score for observation relative to background
         thrshlds = [[-1, 0], [0, 5], [5, 15], [15, 50], [50, 10000]]
+        with open(outpath + f"{disease_query}_EnrichmentResults.txt", 'w') as f:
+            pass
+        
         for paper_thrshld in thrshlds:
             observation = df[(df['Gene and disease'] > paper_thrshld[0]) & (df['Gene and disease'] <= paper_thrshld[1])].shape[0]
             background = [tmp[(tmp['Gene and disease'] > paper_thrshld[0]) & (tmp['Gene and disease'] <= paper_thrshld[1])].shape[0] for tmp in randfs]
@@ -136,12 +139,12 @@ class PubMed_Enrichment():
             # Print results
             if -1 in paper_thrshld:
                 xlabel = '# of Genes with {} Co-Mentions with "{}"'.format(paper_thrshld[0]+1, disease_query)
-                obs_result = "{}/{} genes had 0 co-mentions with {} -- Z = {}".format(observation, len(query), disease_query, z)
+                obs_result = "{}/{} genes had 0 co-mentions with {} -- Z = {}".format(observation, len(query), disease_query, round(z, 5))
             else: 
                 xlabel = '# of Genes with {}-{} Co-Mentions with "{}"'.format(paper_thrshld[0]+1, paper_thrshld[1], disease_query)
-                obs_result = "{}/{} genes had >{} & <={} co-mentions with {} -- Z = {}".format(observation, len(query), paper_thrshld[0], paper_thrshld[1], disease_query, z)
+                obs_result = "{}/{} genes had >{} & <={} co-mentions with {} -- Z = {}".format(observation, len(query), paper_thrshld[0], paper_thrshld[1], disease_query, round(z, 5))
 
-            with open(outpath + f"{disease_query}_EnrichmentResults.txt", 'w') as f:
+            with open(outpath + f"{disease_query}_EnrichmentResults.txt", 'a') as f:
                 f.write(obs_result + "\n")
 
             # Plot Observation and Random Tests
