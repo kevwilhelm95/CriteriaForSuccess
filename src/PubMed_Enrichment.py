@@ -99,7 +99,6 @@ class PubMed_Enrichment():
                 out_df.loc[gene, 'Count'] = n_paper_dis
 
         # Write summary of query genes to table
-        os.makedirs(outpath + disease_query, exist_ok = True)
         out_df.sort_values(by = 'Count', ascending = False).to_csv(outpath + "/PMIDresults_query+" + disease_query + ".csv")
 
         # Perform pubmed query on random genes
@@ -129,17 +128,22 @@ class PubMed_Enrichment():
         for paper_thrshld in thrshlds:
             observation = df[(df['Gene and disease'] > paper_thrshld[0]) & (df['Gene and disease'] <= paper_thrshld[1])].shape[0]
             background = [tmp[(tmp['Gene and disease'] > paper_thrshld[0]) & (tmp['Gene and disease'] <= paper_thrshld[1])].shape[0] for tmp in randfs]
-            print(background)
-            savefile = f"Enrichment_Title-Abstract_query+{disease_query}_>{paper_thrshld[0]}-<={paper_thrshld[1]}.png"
+            savefile = f"Enrichment_query+{disease_query}_>{paper_thrshld[0]}-<={paper_thrshld[1]}.png"
             back_mean = np.mean(background)
             back_std = np.std(background)
             z = (observation - back_mean)/back_std
-            print(back_mean, back_std, z)
 
             # Print results
-            try: 
-                print('Observation is that {} out of {} genes had at least {} publications with "{}"'.format(observation, len(query), (paper_thrshld+1), disease_query))
-                print('Z-score of this was {}'.format(z))
+            try:
+                if -1 in paper_thrshld:
+                    xlabel = '# of Genes with {} Co-Mentions with "{}"'.format(paper_thrshld[0]+1, disease_query)
+                    observation = "{}/{} genes had 0 co-mentions with {} -- Z = {}".format(observation, len(query), disease_query, z)
+                else: 
+                    xlabel = '# of Genes with {}-{} Co-Mentions with "{}"'.format(paper_thrshld[0]+1, paper_thrshld[1], disease_query)
+                    observation = "{}/{} genes had >{} & <={} co-mentions with {} -- Z = {}".format(observation, len(query), paper_thrshld[0], paper_thrshld[1], disease_query, z)
+
+                with open(outpath + f"{disease_query}_Results.txt", 'rw') as f:
+                    f.write(observation + "\n")
 
                 # Plot Observation and Random Tests
                 fig, ax = plt.subplots(
@@ -148,8 +152,7 @@ class PubMed_Enrichment():
                 y, x, _ = plt.hist(background, color='dimgrey', edgecolor='white')
                 plt.axvline(x=observation, ymax=0.5, linestyle='dotted', color='red')
                 plt.text(x=observation*0.99, y=(y.max()/1.95), s='{}/{} (Z = {})'.format(observation, len(query), round(z, 2)), color='red', ha='right')
-                plt.xlabel(
-                    '# of genes with X papers co-mentioning "{}"'.format(disease_query), fontsize=15)
+                plt.xlabel(xlabel, fontsize=15)
                 plt.ylabel('Count', fontsize=15)
                 plt.savefig(outpath + savefile)
                 plt.close()
