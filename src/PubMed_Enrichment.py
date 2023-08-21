@@ -136,13 +136,13 @@ class PubMed_Enrichment():
             # Print results
             if -1 in paper_thrshld:
                 xlabel = '# of Genes with {} Co-Mentions with "{}"'.format(paper_thrshld[0]+1, disease_query)
-                observation = "{}/{} genes had 0 co-mentions with {} -- Z = {}".format(observation, len(query), disease_query, z)
+                obs_result = "{}/{} genes had 0 co-mentions with {} -- Z = {}".format(observation, len(query), disease_query, z)
             else: 
                 xlabel = '# of Genes with {}-{} Co-Mentions with "{}"'.format(paper_thrshld[0]+1, paper_thrshld[1], disease_query)
-                observation = "{}/{} genes had >{} & <={} co-mentions with {} -- Z = {}".format(observation, len(query), paper_thrshld[0], paper_thrshld[1], disease_query, z)
+                obs_result = "{}/{} genes had >{} & <={} co-mentions with {} -- Z = {}".format(observation, len(query), paper_thrshld[0], paper_thrshld[1], disease_query, z)
 
-            with open(outpath + f"{disease_query}_Results.txt", 'w') as f:
-                f.write(observation + "\n")
+            with open(outpath + f"{disease_query}_EnrichmentResults.txt", 'w') as f:
+                f.write(obs_result + "\n")
 
             # Plot Observation and Random Tests
             fig, ax = plt.subplots(
