@@ -10,11 +10,6 @@ import concurrent.futures
 from itertools import repeat
 from helper_functions import CreateDir, ParseGeneLocationFile
 
-plt.rcParams.update({
-    'font.family': 'Avenir',
-    'font.size': 14
-})
-
 # Define Class
 class PubMed_Enrichment():
     def __init__(self, df, df_name, interest_list, ref, keywords, output_path):
@@ -127,7 +122,7 @@ class PubMed_Enrichment():
         thrshlds = [[-1, 0], [0, 5], [5, 15], [15, 50], [50, 10000]]
         with open(outpath + f"{disease_query}_EnrichmentResults.txt", 'w') as f:
             f.write("Results:\n")
-            f.close()
+            f.flush()
         
         for paper_thrshld in thrshlds:
             observation = df[(df['Gene and disease'] > paper_thrshld[0]) & (df['Gene and disease'] <= paper_thrshld[1])].shape[0]
@@ -147,7 +142,7 @@ class PubMed_Enrichment():
 
             with open(outpath + f"{disease_query}_EnrichmentResults.txt", 'a') as f:
                 f.write(obs_result + "\n")
-                f.close()
+                f.flush()
 
             # Plot Observation and Random Tests
             fig, ax = plt.subplots(
