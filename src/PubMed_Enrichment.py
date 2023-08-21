@@ -126,7 +126,8 @@ class PubMed_Enrichment():
         # Calculate Z-score for observation relative to background
         thrshlds = [[-1, 0], [0, 5], [5, 15], [15, 50], [50, 10000]]
         with open(outpath + f"{disease_query}_EnrichmentResults.txt", 'w') as f:
-            pass
+            f.write("Results:\n")
+            f.close()
         
         for paper_thrshld in thrshlds:
             observation = df[(df['Gene and disease'] > paper_thrshld[0]) & (df['Gene and disease'] <= paper_thrshld[1])].shape[0]
@@ -146,6 +147,7 @@ class PubMed_Enrichment():
 
             with open(outpath + f"{disease_query}_EnrichmentResults.txt", 'a') as f:
                 f.write(obs_result + "\n")
+                f.close()
 
             # Plot Observation and Random Tests
             fig, ax = plt.subplots(
