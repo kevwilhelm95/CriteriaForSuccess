@@ -97,7 +97,7 @@ class PubMed_Enrichment():
         out_df.sort_values(by = 'Count', ascending = False).to_csv(outpath + "/PMIDresults_query+" + disease_query + ".csv")
 
         # Perform pubmed query on random genes
-        trials = 7
+        trials = 100
         randfs = []
         print('Pulling Publications for {} random gene sets of {} genes'.format(trials, len(query)))
         for i in range(trials):
