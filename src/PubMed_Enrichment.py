@@ -18,7 +18,9 @@ class PubMed_Enrichment():
         self.df = df
         self.df_name = df_name
         self.interest_list = interest_list
-        self.key_word_list = keywords.split(",")
+        try: self.key_word_list = keywords.split(",")
+        except AttributeError:
+            print("Please define '--PubMedKeywords'")
         self.ref = ref
         self.output_path = output_path
         self.main()
