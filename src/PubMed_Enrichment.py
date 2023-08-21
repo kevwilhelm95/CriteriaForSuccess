@@ -41,6 +41,7 @@ class PubMed_Enrichment():
         except IndexError:
             print(f"{gene} - Not Found")
         except HTTPError:
+            print('....Network Error-Waiting 10s')
             time.sleep(10)
             handle = Entrez.esearch(db = 'pubmed',
                                 sort = 'relevance',
@@ -48,6 +49,7 @@ class PubMed_Enrichment():
                                 retmode = 'xml',
                                 term = new_query)
         except IncompleteRead:
+            print('....Network Error-Waiting 10s')
             time.sleep(10)
             try: handle = Entrez.esearch(db = 'pubmed',
                                 sort = 'relevance',
