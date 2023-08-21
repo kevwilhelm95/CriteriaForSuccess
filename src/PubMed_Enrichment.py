@@ -10,6 +10,11 @@ import concurrent.futures
 from itertools import repeat
 from helper_functions import CreateDir, ParseGeneLocationFile
 
+plt.rcParams.update({
+    'font.family': 'Avenir',
+    'font.size': 14
+})
+
 # Define Class
 class PubMed_Enrichment():
     def __init__(self, df, df_name, interest_list, ref, keywords, output_path):
@@ -67,7 +72,7 @@ class PubMed_Enrichment():
 
     def GetEnrichment(self, query, disease_query, background_genes, max_workers, outpath):
         ## Perform PubMed query on our query genes
-        print('Pulling Publications for Query Genes')
+        print(f'Pulling Publications for {len(query)} Query Genes + {disease_query}')
         df = pd.DataFrame(columns=['Gene and paper', 'Gene and disease'], index=query)
         out_df = pd.DataFrame(columns=['Count', 'PMID for Gene + ' + str(disease_query)], index=query)
 
@@ -124,10 +129,12 @@ class PubMed_Enrichment():
         for paper_thrshld in thrshlds:
             observation = df[(df['Gene and disease'] > paper_thrshld[0]) & (df['Gene and disease'] <= paper_thrshld[1])].shape[0]
             background = [tmp[(tmp['Gene and disease'] > paper_thrshld[0]) & (tmp['Gene and disease'] <= paper_thrshld[1])].shape[0] for tmp in randfs]
+            print(background)
             savefile = f"Enrichment_Title-Abstract_query+{disease_query}_>{paper_thrshld[0]}-<={paper_thrshld[1]}.png"
             back_mean = np.mean(background)
             back_std = np.std(background)
             z = (observation - back_mean)/back_std
+            print(back_mean, back_std, z)
 
             # Print results
             try: 
@@ -140,8 +147,7 @@ class PubMed_Enrichment():
 
                 y, x, _ = plt.hist(background, color='dimgrey', edgecolor='white')
                 plt.axvline(x=observation, ymax=0.5, linestyle='dotted', color='red')
-                plt.text(x=observation*0.99, y=(y.max()/1.95), s='{}/{} (Z = {})'.format(
-                    observation, len(query), round(z, 2)), color='red', ha='right')
+                plt.text(x=observation*0.99, y=(y.max()/1.95), s='{}/{} (Z = {})'.format(observation, len(query), round(z, 2)), color='red', ha='right')
                 plt.xlabel(
                     '# of genes with X papers co-mentioning "{}"'.format(disease_query), fontsize=15)
                 plt.ylabel('Count', fontsize=15)
