@@ -95,7 +95,7 @@ class PubMed_Enrichment():
 
         # Write summary of query genes to table
         os.makedirs(outpath + disease_query, exist_ok = True)
-        out_df.sort_values(by = 'Count', ascending = False).to_csv(outpath + disease_query + "/PMIDresults_query+" + disease_query + ".csv")
+        out_df.sort_values(by = 'Count', ascending = False).to_csv(outpath + "/PMIDresults_query+" + disease_query + ".csv")
 
         # Perform pubmed query on random genes
         trials = 100
