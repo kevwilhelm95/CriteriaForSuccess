@@ -142,7 +142,7 @@ class PubMed_Enrichment():
                     xlabel = '# of Genes with {}-{} Co-Mentions with "{}"'.format(paper_thrshld[0]+1, paper_thrshld[1], disease_query)
                     observation = "{}/{} genes had >{} & <={} co-mentions with {} -- Z = {}".format(observation, len(query), paper_thrshld[0], paper_thrshld[1], disease_query, z)
 
-                with open(outpath + f"{disease_query}_Results.txt", 'rw') as f:
+                with open(outpath + f"{disease_query}_Results.txt", 'w') as f:
                     f.write(observation + "\n")
 
                 # Plot Observation and Random Tests
