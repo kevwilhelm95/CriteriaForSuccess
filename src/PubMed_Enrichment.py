@@ -134,31 +134,28 @@ class PubMed_Enrichment():
             z = (observation - back_mean)/back_std
 
             # Print results
-            try:
-                if -1 in paper_thrshld:
-                    xlabel = '# of Genes with {} Co-Mentions with "{}"'.format(paper_thrshld[0]+1, disease_query)
-                    observation = "{}/{} genes had 0 co-mentions with {} -- Z = {}".format(observation, len(query), disease_query, z)
-                else: 
-                    xlabel = '# of Genes with {}-{} Co-Mentions with "{}"'.format(paper_thrshld[0]+1, paper_thrshld[1], disease_query)
-                    observation = "{}/{} genes had >{} & <={} co-mentions with {} -- Z = {}".format(observation, len(query), paper_thrshld[0], paper_thrshld[1], disease_query, z)
+            if -1 in paper_thrshld:
+                xlabel = '# of Genes with {} Co-Mentions with "{}"'.format(paper_thrshld[0]+1, disease_query)
+                observation = "{}/{} genes had 0 co-mentions with {} -- Z = {}".format(observation, len(query), disease_query, z)
+            else: 
+                xlabel = '# of Genes with {}-{} Co-Mentions with "{}"'.format(paper_thrshld[0]+1, paper_thrshld[1], disease_query)
+                observation = "{}/{} genes had >{} & <={} co-mentions with {} -- Z = {}".format(observation, len(query), paper_thrshld[0], paper_thrshld[1], disease_query, z)
 
-                with open(outpath + f"{disease_query}_Results.txt", 'w') as f:
-                    f.write(observation + "\n")
+            with open(outpath + f"{disease_query}_Results.txt", 'w') as f:
+                f.write(observation + "\n")
 
-                # Plot Observation and Random Tests
-                fig, ax = plt.subplots(
-                    figsize=(6, 3.5), facecolor='white', frameon=False)
+            # Plot Observation and Random Tests
+            fig, ax = plt.subplots(
+                figsize=(6, 3.5), facecolor='white', frameon=False)
 
-                y, x, _ = plt.hist(background, color='dimgrey', edgecolor='white')
-                plt.axvline(x=observation, ymax=0.5, linestyle='dotted', color='red')
-                plt.text(x=observation*0.99, y=(y.max()/1.95), s='{}/{} (Z = {})'.format(observation, len(query), round(z, 2)), color='red', ha='right')
-                plt.xlabel(xlabel, fontsize=15)
-                plt.ylabel('Count', fontsize=15)
-                plt.savefig(outpath + savefile)
-                plt.close()
-            except:
-                print("PubMed Enrichment - Error Plotting")
-                continue
+            y, x, _ = plt.hist(background, color='dimgrey', edgecolor='white')
+            plt.axvline(x=observation, ymax=0.5, linestyle='dotted', color='red')
+            plt.text(x=observation*0.99, y=(y.max()/1.95), s='{}/{} (Z = {})'.format(observation, len(query), round(z, 2)), color='red', ha='right')
+            plt.xlabel(xlabel, fontsize=15)
+            plt.ylabel('Count', fontsize=15)
+            plt.savefig(outpath + savefile)
+            plt.close()
+
 
         
     def main(self):
@@ -170,7 +167,6 @@ class PubMed_Enrichment():
             gL_hold = self.df[gL].dropna()
             # Loop through keyword queries
             for keyword in self.key_word_list:
-                print(f"--- Querying {gL} genes for co-mentions with {keyword}---")
                 # Create directory
                 hold_OutPutPath = CreateDir(self.output_path, f"{gL}/{keyword}")
                 self.GetEnrichment(gL_hold, keyword, background_genes, max_workers = 6, outpath = hold_OutPutPath)
