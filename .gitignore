@@ -1,2 +1,15 @@
 
 .DS_Store
+.DS_Store
+.DS_Store
+src/.DS_Store
+src/__pycache__/GetInputs.cpython-37.pyc
+src/__pycache__/GetInputs.cpython-38.pyc
+src/__pycache__/GoldStandardOverlap.cpython-37.pyc
+src/__pycache__/GoldStandardOverlap.cpython-38.pyc
+src/__pycache__/MGIEnrichment.cpython-37.pyc
+src/__pycache__/MGIEnrichment.cpython-38.pyc
+src/__pycache__/OddsRatios.cpython-37.pyc
+src/__pycache__/OddsRatios.cpython-38.pyc
+src/__pycache__/Pharmacology.cpython-37.pyc
+src/__pycache__/Pharmacology.cpython-38.pyc
